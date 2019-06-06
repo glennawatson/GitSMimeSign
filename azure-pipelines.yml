@@ -1,0 +1,54 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  dotNetVersion: '3.0.100-preview5-011568'
+
+steps:
+- task: NuGetToolInstaller@0
+  inputs:
+    versionSpec: '5.1.0' 
+
+- task: DotNetCoreInstaller@0
+  displayName: Install Dot Net Core v$(dotNetVersion)
+  inputs:
+    version: $(dotNetVersion)
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(solution)'
+    vstsFeed: BeyondRecognition
+    includeNuGetOrg: false
+
+- task: DotNetCoreCLI@2  
+  inputs:
+    command: custom
+    custom: tool
+    arguments: install --tool-path . nbgv
+  displayName: Install NBGV tool
+
+- script: nbgv cloud
+  displayName: Set Version
+
+- task: MSBuild@1
+  displayName: Build Solutions
+  inputs:
+    solution: '$(solution)'
+    msbuildArguments: /t:build;pack /p:NoPackageAnalysis=true /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)\artifacts
+    configuration: $(BuildConfiguration)
+    maximumCpuCount: true
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Build Artifacts
+  inputs:
+    PathtoPublish: $(Build.ArtifactStagingDirectory)\artifacts
+    ArtifactName: artifacts
+    publishLocation: Container
+  condition: always()
