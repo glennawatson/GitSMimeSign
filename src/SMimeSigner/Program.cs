@@ -27,7 +27,9 @@ namespace SMimeSigner
         /// <param name="args">Command line arguments that have been passed in.</param>
         public static async Task<int> Main(string[] args)
         {
+            #if DEBUG
             // Debugger.Launch();
+            #endif
 
             // Command Line Parser doesn't handle loner '-' well, so convert to empty brackets.
             for (int i = 0; i < args.Length; ++i)
@@ -46,9 +48,9 @@ namespace SMimeSigner
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
-                Console.Error.WriteLine();
-                Console.Error.WriteLine(HelpText.AutoBuild(parserResult, null, null));
+                Console.WriteLine(ex.Message);
+                Console.WriteLine();
+                Console.WriteLine(HelpText.AutoBuild(parserResult, null, null));
                 return 1;
             }
         }
@@ -81,7 +83,7 @@ namespace SMimeSigner
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("SMimeSigner error: " + ex.Message);
+                InfoOutputHelper.WriteLine(ex.Message);
             }
 
             return 1;

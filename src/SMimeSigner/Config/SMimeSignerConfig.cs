@@ -51,7 +51,8 @@ namespace SMimeSigner.Config
 
             var timeAuthorityUriString = iniFileParser.GetValue("Certificate", "TimeAuthorityUrl");
 
-            if (!Uri.TryCreate(timeAuthorityUriString, UriKind.Absolute, out var authorityUri))
+            Uri authorityUri = null;
+            if (!string.IsNullOrWhiteSpace(timeAuthorityUriString) && !Uri.TryCreate(timeAuthorityUriString, UriKind.Absolute, out authorityUri))
             {
                 throw new Exception("The timestamp authority is not a valid URL inside configuration file: " + configFilePath);
             }

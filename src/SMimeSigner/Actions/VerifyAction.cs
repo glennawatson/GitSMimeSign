@@ -135,8 +135,23 @@ namespace SMimeSigner.Actions
 
                 signedCms.CheckSignature(false);
 
+                if (signedCms.SignerInfos.Count == 0)
+                {
+                    throw new CryptographicException("Must have valid signing information. There is none in the signature.");
+                }
+
+                var issuedCertificate = signedCms.SignerInfos[0].Certificate;
+
+                foreach (var signedInfo in signedCms.SignerInfos)
+                {
+                    if (CheckSignerInfo(signedInfo, issuedCertificate.NotBefore, issuedCertificate.NotAfter) == false)
+                    {
+                        throw new CryptographicException("There is not a valid signing timestamp authority stamp.");
+                    }
+                }
+
                 WriteGpgCertificateData(GoodSignature, signedCms.Certificates);
-                WriteSigningInformation(true, signedCms);
+                WriteSigningInformation(issuedCertificate, true, signedCms);
 
                 GpgOutputHelper.WriteLine($"{FullyTrusted} 0 shell"); // This indicates we fully trust using the x509 model.
             }
@@ -148,8 +163,9 @@ namespace SMimeSigner.Actions
                 }
                 else
                 {
+                    var issuedCertificate = signedCms.SignerInfos[0].Certificate;
                     WriteGpgCertificateData(BadSignature, signedCms.Certificates);
-                    WriteSigningInformation(false, signedCms);
+                    WriteSigningInformation(issuedCertificate, false, signedCms);
                 }
 
                 throw;
@@ -172,29 +188,20 @@ namespace SMimeSigner.Actions
         /// <summary>
         /// Write out in user friendly format information about the signing.
         /// </summary>
+        /// <param name="issuedCertificate">The issued certificate.</param>
         /// <param name="goodSignature">If this is a good signature or not.</param>
         /// <param name="signedCms">The information about the signing.</param>
-        private static void WriteSigningInformation(bool goodSignature, SignedCms signedCms)
+        private static void WriteSigningInformation(X509Certificate2 issuedCertificate, bool goodSignature, SignedCms signedCms)
         {
-            var issuedCertificate = signedCms.Certificates[0];
-
             InfoOutputHelper.WriteLine($"Signature made using certificate ID 0x{issuedCertificate.Thumbprint}");
 
-            foreach (var attributeObject in signedCms.SignerInfos[0].SignedAttributes)
+            foreach (var signerInfo in signedCms.SignerInfos)
             {
-                if (attributeObject.Values[0] is Pkcs9SigningTime signingTime)
+                foreach (var attributeObject in signerInfo.SignedAttributes)
                 {
-                    InfoOutputHelper.WriteLine($"Signature made at {signingTime.SigningTime.ToString("O", CultureInfo.InvariantCulture)}");
-                }
-            }
-
-            foreach (var attributeObject in signedCms.SignerInfos[0].SignedAttributes)
-            {
-                if (attributeObject.Oid == CertificateHelper.SignatureTimeStampOin)
-                {
-                    if (Rfc3161TimestampToken.TryDecode(attributeObject.Values[0].RawData, out var signingToken, out _))
+                    if (attributeObject.Values[0] is Pkcs9SigningTime signingTime)
                     {
-                        InfoOutputHelper.WriteLine($"Signature timestamped by signing authority {signingToken.TokenInfo.Timestamp}");
+                        InfoOutputHelper.WriteLine($"Signature made at {signingTime.SigningTime.ToString("O", CultureInfo.InvariantCulture)}");
                     }
                 }
             }
@@ -209,6 +216,75 @@ namespace SMimeSigner.Actions
             {
                 InfoOutputHelper.WriteLine($"Bad signature from '{issuedCertificate.Subject}'");
             }
+        }
+
+        private static bool? CheckSignerInfo(SignerInfo signerInfo, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
+        {
+            const string TimeStampTokenOid = "1.2.840.113549.1.9.16.2.14";
+            bool found = false;
+            byte[] signatureBytes = null;
+
+            foreach (CryptographicAttributeObject attr in signerInfo.UnsignedAttributes)
+            {
+                if (attr.Oid.Value == TimeStampTokenOid)
+                {
+                    foreach (AsnEncodedData attrInst in attr.Values)
+                    {
+                        byte[] attrData = attrInst.RawData;
+
+                        // New API starts here:
+                        if (!Rfc3161TimestampToken.TryDecode(attrData, out var token, out var bytesRead))
+                        {
+                            return false;
+                        }
+
+                        if (bytesRead != attrData.Length)
+                        {
+                            return false;
+                        }
+
+                        signatureBytes = signatureBytes ?? signerInfo.GetSignature();
+
+                        // Check that the token was issued based on the SignerInfo's signature value
+                        if (!token.VerifySignatureForSignerInfo(signerInfo, out var _))
+                        {
+                            return false;
+                        }
+
+                        var timestamp = token.TokenInfo.Timestamp;
+
+                        // Check that the signed timestamp is within the provided policy range
+                        // (which may be (signerInfo.Certificate.NotBefore, signerInfo.Certificate.NotAfter);
+                        // or some other policy decision)
+                        if (timestamp < notBefore.GetValueOrDefault(timestamp) ||
+                            timestamp > notAfter.GetValueOrDefault(timestamp))
+                        {
+                            return false;
+                        }
+
+                        var tokenSignerCert = token.AsSignedCms().SignerInfos[0].Certificate;
+
+                        // Implicit policy decision: Tokens required embedded certificates (since this method has
+                        // no resolver)
+                        if (tokenSignerCert == null)
+                        {
+                            return false;
+                        }
+
+                        found = true;
+                    }
+                }
+            }
+
+            // If we found any attributes and none of them returned an early false, then the SignerInfo is
+            // conformant to policy.
+            if (found)
+            {
+                return true;
+            }
+
+            // Inconclusive, as no signed timestamps were found
+            return null;
         }
     }
 }

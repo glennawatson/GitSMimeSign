@@ -67,6 +67,7 @@ namespace SMimeSigner.Actions
             var contentInfo = new ContentInfo(bytes);
             var cms = new SignedCms(contentInfo, isDetached);
             var signer = new CmsSigner(certificate) { IncludeOption = includeOption };
+            signer.SignedAttributes.Add(new Pkcs9SigningTime());
 
             if (timeStampAuthority != null)
             {
@@ -74,16 +75,11 @@ namespace SMimeSigner.Actions
 
                 signer.UnsignedAttributes.Add(new AsnEncodedData(CertificateHelper.SignatureTimeStampOin, timestampToken.AsSignedCms().Encode()));
             }
-            else
-            {
-                signer.SignedAttributes.Add(new Pkcs9SigningTime());
-            }
 
             cms.ComputeSignature(signer);
+            var encoding = cms.Encode();
 
             WriteSignature(certificate, isDetached);
-
-            var encoding = cms.Encode();
             if (useArmor)
             {
                 Console.WriteLine(PemHelper.EncodeString("SIGNED MESSAGE", encoding));

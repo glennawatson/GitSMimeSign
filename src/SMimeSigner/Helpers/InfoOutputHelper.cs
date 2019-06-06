@@ -23,5 +23,10 @@ namespace SMimeSigner.Helpers
             // Use unix style output since this seems to be what GIT likes.
             _textWriter?.Write(Prefix + output + '\n', args);
         }
+
+        internal static void WriteLine()
+        {
+            _textWriter?.Write('\n');
+        }
     }
 }
