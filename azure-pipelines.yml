@@ -8,7 +8,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  dotNetVersion: '3.0.100-preview5-011568'
+  dotNetVersion: '2.2.300'
 
 steps:
 - task: NuGetToolInstaller@0
@@ -24,8 +24,6 @@ steps:
   displayName: 'NuGet restore'
   inputs:
     restoreSolution: '$(solution)'
-    vstsFeed: BeyondRecognition
-    includeNuGetOrg: false
 
 - task: DotNetCoreCLI@2  
   inputs:
