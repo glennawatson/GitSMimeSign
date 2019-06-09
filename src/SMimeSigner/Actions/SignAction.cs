@@ -13,6 +13,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 using SMimeSigner.Helpers;
+using SMimeSigner.Timestamper;
 
 namespace SMimeSigner.Actions
 {
@@ -38,7 +39,22 @@ namespace SMimeSigner.Actions
         //   letter 'T'.
         private const string SignatureCreated = "SIG_CREATED";
 
-        public static async Task<int> Do(string fileName, string localUser, Uri timeStampAuthority, bool isDetached, bool useArmor, X509IncludeOption includeOption)
+        /// <summary>
+        /// Gets or sets the time stamper which will perform time stamping operations.
+        /// </summary>
+        internal static ITimeStamper TimeStamper { get; set; } = HttpTimeStamper.Default;
+
+        /// <summary>
+        /// Performs the sign action.
+        /// </summary>
+        /// <param name="fileName">The file name to sign. If null will be stdin.</param>
+        /// <param name="localUser">The email address or certificate id of the certificate to sign against.</param>
+        /// <param name="timeStampAuthority">A uri to the timestamp authority.</param>
+        /// <param name="isDetached">If the signing operation should be detached and produce separate signature.</param>
+        /// <param name="useArmor">If we should produce data in the PEM encoded format.</param>
+        /// <param name="includeOption">The certificate include options, if we should just include end certificates, or intermediate/root certificates as well.</param>
+        /// <returns>0 if the operation was successful, 1 otherwise.</returns>
+        public static Task<int> Do(string fileName, string localUser, Uri timeStampAuthority, bool isDetached, bool useArmor, X509IncludeOption includeOption)
         {
             if (localUser == null)
             {
@@ -49,12 +65,39 @@ namespace SMimeSigner.Actions
 
             if (certificate == null)
             {
-                throw new Exception("Failed to get identity certificate with identity: " + localUser);
+                throw new ArgumentException("Failed to get identity certificate with identity: " + localUser, nameof(localUser));
+            }
+
+            var bytes = FileSystemStreamHelper.ReadFileStreamFully(fileName);
+
+            return PerformSign(certificate, bytes, timeStampAuthority, isDetached, useArmor, includeOption);
+        }
+
+        /// <summary>
+        /// Performs a signing operation.
+        /// </summary>
+        /// <param name="certificate">The certificate to use for signing.</param>
+        /// <param name="bytes">The bytes to sign.</param>
+        /// <param name="timeStampAuthority">A optional RFC3161 timestamp authority to sign against.</param>
+        /// <param name="isDetached">If we should be producing detached results.</param>
+        /// <param name="useArmor">If we should encode in PEM format.</param>
+        /// <param name="includeOption">The certificate include options, if we should just include end certificates, or intermediate/root certificates as well.</param>
+        /// <returns>0 if the operation was successful, 1 otherwise.</returns>
+        internal static async Task<int> PerformSign(X509Certificate2 certificate, byte[] bytes, Uri timeStampAuthority, bool isDetached, bool useArmor, X509IncludeOption includeOption)
+        {
+            if (certificate == null)
+            {
+                throw new ArgumentNullException(nameof(certificate), "Must have a valid certificate");
             }
 
             if (!certificate.HasPrivateKey)
             {
-                throw new Exception($"The certificate {certificate.Thumbprint} has a invalid signing key.");
+                throw new ArgumentException($"The certificate {certificate.Thumbprint} has a invalid signing key.", nameof(certificate));
+            }
+
+            if (bytes == null)
+            {
+                throw new ArgumentNullException(nameof(bytes), "Must have valid data to encrypt.");
             }
 
             // Git is looking for "\n[GNUPG:] SIG_CREATED ", meaning we need to print a
@@ -62,90 +105,40 @@ namespace SMimeSigner.Actions
             // though GPGSM does not.
             GpgOutputHelper.WriteLine(BeginSigning);
 
-            var bytes = FileSystemStreamHelper.ReadFileStreamFully(fileName);
-
             var contentInfo = new ContentInfo(bytes);
             var cms = new SignedCms(contentInfo, isDetached);
             var signer = new CmsSigner(certificate) { IncludeOption = includeOption };
             signer.SignedAttributes.Add(new Pkcs9SigningTime());
 
+            cms.ComputeSignature(signer, false);
+
+            // If we are provided with a authority, add the timestamp certificate into our unsigned attributes.
             if (timeStampAuthority != null)
             {
-                var timestampToken = await GetTimestamp(cms, signer, timeStampAuthority).ConfigureAwait(false);
-
-                signer.UnsignedAttributes.Add(new AsnEncodedData(CertificateHelper.SignatureTimeStampOin, timestampToken.AsSignedCms().Encode()));
+                await TimeStamper.GetAndSetRfc3161Timestamp(cms, timeStampAuthority).ConfigureAwait(false);
             }
 
-            cms.ComputeSignature(signer);
             var encoding = cms.Encode();
 
-            WriteSignature(certificate, isDetached);
+            // Write out the signature in GPG expected format.
+            WriteGpgFormatSignature(certificate, isDetached);
+
             if (useArmor)
             {
-                Console.WriteLine(PemHelper.EncodeString("SIGNED MESSAGE", encoding));
+                GpgOutputHelper.NoPrefixWriteLine(PemHelper.EncodeString("SIGNED MESSAGE", encoding));
             }
             else
             {
-                using (Stream myOutStream = Console.OpenStandardOutput())
-                {
-                    myOutStream.Write(encoding, 0, encoding.Length);
-                }
+                GpgOutputHelper.OutputStream.Value.Write(encoding, 0, encoding.Length);
             }
+
+            await GpgOutputHelper.TextWriter.FlushAsync().ConfigureAwait(false);
+            await InfoOutputHelper.TextWriter.FlushAsync().ConfigureAwait(false);
 
             return 0;
         }
 
-        private static async Task<Rfc3161TimestampToken> GetTimestamp(SignedCms toSign, CmsSigner newSigner, Uri timeStampAuthorityUri)
-        {
-            if (timeStampAuthorityUri == null)
-            {
-                throw new ArgumentNullException(nameof(timeStampAuthorityUri));
-            }
-
-            // This example figures out which signer is new by it being "the only signer"
-            if (toSign.SignerInfos.Count > 0)
-            {
-                throw new ArgumentException("We must have only one signer", nameof(toSign));
-            }
-
-            toSign.ComputeSignature(newSigner);
-
-            SignerInfo newSignerInfo = toSign.SignerInfos[0];
-
-            byte[] nonce = new byte[8];
-
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(nonce);
-            }
-
-            var request = Rfc3161TimestampRequest.CreateFromSignerInfo(
-                newSignerInfo,
-                HashAlgorithmName.SHA384,
-                requestSignerCertificates: true,
-                nonce: nonce);
-
-            var client = new HttpClient();
-            var content = new ReadOnlyMemoryContent(request.Encode());
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/timestamp-query");
-            var httpResponse = await client.PostAsync(timeStampAuthorityUri, content).ConfigureAwait(false);
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                throw new CryptographicException(
-                    $"There was a error from the timestamp authority. It responded with {httpResponse.StatusCode} {(int)httpResponse.StatusCode}: {httpResponse.Content}");
-            }
-
-            if (httpResponse.Content.Headers.ContentType.MediaType != "application/timestamp-reply")
-            {
-                throw new CryptographicException("The reply from the time stamp server was in a invalid format.");
-            }
-
-            var data = await httpResponse.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-
-            return request.ProcessResponse(data, out _);
-        }
-
-        private static void WriteSignature(X509Certificate2 certificate, bool isDetached)
+        private static void WriteGpgFormatSignature(X509Certificate2 certificate, bool isDetached)
         {
             const int signatureCode = 0; // GPGSM uses 0 as well.
             var signatureType = isDetached ? "D" : "S";

@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 
 namespace SMimeSigner.Helpers
 {
@@ -19,8 +20,10 @@ namespace SMimeSigner.Helpers
 
         private static string _fileDescriptor;
 
-        private static TextWriter _textWriter;
-
+        /// <summary>
+        /// Gets or sets the file descriptor. This will be unix style file descriptors, or a file for debugging.
+        /// It can be NULL for no output.
+        /// </summary>
         public static string FileDescriptor
         {
             get => _fileDescriptor;
@@ -36,21 +39,49 @@ namespace SMimeSigner.Helpers
                 switch (value)
                 {
                     case "1":
-                        _textWriter = Console.Out;
+                        TextWriter = Console.Out;
+                        OutputStream = new Lazy<Stream>(Console.OpenStandardOutput, LazyThreadSafetyMode.PublicationOnly);
                         break;
                     case "2":
-                        _textWriter = Console.Error;
+                        TextWriter = Console.Error;
+                        OutputStream = new Lazy<Stream>(Console.OpenStandardError, LazyThreadSafetyMode.PublicationOnly);
                         break;
                     default:
-                        _textWriter = new StreamWriter(value);
+                        TextWriter = new StreamWriter(value);
+                        OutputStream = new Lazy<Stream>(() => new FileStream(value, FileMode.OpenOrCreate, FileAccess.Write), true);
                         break;
                 }
             }
         }
 
+        /// <summary>
+        /// Gets or sets the text writer.
+        /// </summary>
+        internal static TextWriter TextWriter { get; set; }
+
+        /// <summary>
+        /// Gets or sets a stream to the output.
+        /// </summary>
+        internal static Lazy<Stream> OutputStream { get; set; }
+
+        /// <summary>
+        /// Writes the line to the gpg output. Adding the prefix.
+        /// </summary>
+        /// <param name="output">The string to format.</param>
+        /// <param name="args">The arguments if any for the formatting.</param>
         public static void WriteLine(string output, params object[] args)
         {
-            _textWriter?.WriteLine(Prefix + output, args);
+            TextWriter?.WriteLine(Prefix + output, args);
+        }
+
+        /// <summary>
+        /// Writes the line to the gpg output without the prefix.
+        /// </summary>
+        /// <param name="output">The string to format.</param>
+        /// <param name="args">The arguments if any for the formatting.</param>
+        public static void NoPrefixWriteLine(string output, params object[] args)
+        {
+            TextWriter?.WriteLine(output, args);
         }
     }
 }

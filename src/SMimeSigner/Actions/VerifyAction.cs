@@ -11,6 +11,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
 using SMimeSigner.Helpers;
+using SMimeSigner.Timestamper;
 
 namespace SMimeSigner.Actions
 {
@@ -88,9 +89,14 @@ namespace SMimeSigner.Actions
         //   historic reasons; we now speak of validity.
         private const string FullyTrusted = "TRUST_FULLY";
 
+        /// <summary>
+        /// Gets or sets the time stamper which will perform time stamping operations.
+        /// </summary>
+        internal static ITimeStamper TimeStamper { get; set; } = HttpTimeStamper.Default;
+
         public static int Do(string[] fileNames)
         {
-            Console.WriteLine(NewSig);
+            GpgOutputHelper.WriteLine(NewSig);
 
             if (fileNames.Length < 2)
             {
@@ -104,36 +110,70 @@ namespace SMimeSigner.Actions
             return 0;
         }
 
-        private static void VerifyAttached(string fileName)
+        /// <summary>
+        /// Verifies a file with attached signature.
+        /// </summary>
+        /// <param name="fileName">The file name to check.</param>
+        internal static void VerifyAttached(string fileName)
         {
             var bytes = FileSystemStreamHelper.ReadFileStreamFully(fileName);
+            VerifyAttached(bytes);
+        }
 
+        /// <summary>
+        /// Verify the bytes. This exists mostly for testing.
+        /// </summary>
+        /// <param name="bytes">The bytes to verify.</param>
+        internal static void VerifyAttached(byte[] bytes)
+        {
             PemHelper.TryDecode(bytes, out var body);
             VerifySignedData(new SignedCms(), body);
         }
 
-        private static void VerifyDetached(IReadOnlyList<string> fileNames)
+        /// <summary>
+        /// Verifies input in attached format.
+        /// </summary>
+        /// <param name="fileNames">The file names to check. Should be two entries, first for the signature, second for the data.</param>
+        internal static void VerifyDetached(IReadOnlyList<string> fileNames)
         {
             var signatureBytes = FileSystemStreamHelper.ReadFileStreamFully(fileNames[0]);
 
             var signedDataBytes = FileSystemStreamHelper.ReadFileStreamFully(fileNames[1]);
 
+            VerifyDetached(signatureBytes, signedDataBytes);
+        }
+
+        /// <summary>
+        /// Verifies the bytes of both the signature and data bytes.
+        /// This method mostly exists for testing purposes.
+        /// </summary>
+        /// <param name="signatureBytes">The signature bytes to verify.</param>
+        /// <param name="signedDataBytes">The data bytes to verify.</param>
+        /// <param name="verifySignatureOnly">If we should verify the signature only. Useful for testing only.</param>
+        internal static void VerifyDetached(byte[] signatureBytes, byte[] signedDataBytes, bool verifySignatureOnly = false)
+        {
             var contentInfo = new ContentInfo(signedDataBytes);
 
             // Create a new, detached SignedCms message.
             var signedCms = new SignedCms(contentInfo, true);
 
             PemHelper.TryDecode(signatureBytes, out var signatureBody);
-            VerifySignedData(signedCms, signatureBody);
+            VerifySignedData(signedCms, signatureBody, verifySignatureOnly);
         }
 
-        private static void VerifySignedData(SignedCms signedCms, byte[] body)
+        /// <summary>
+        /// Common code for both the attached/detached cases. It will verify that the signatures are valid for the data.
+        /// </summary>
+        /// <param name="signedCms">The signed CMS which we will validate.</param>
+        /// <param name="body">The bytes we want to validate against.</param>
+        /// <param name="verifySignatureOnly">If we should verify the signature only. Useful for testing only.</param>
+        internal static void VerifySignedData(SignedCms signedCms, byte[] body, bool verifySignatureOnly = false)
         {
             try
             {
                 signedCms.Decode(body);
 
-                signedCms.CheckSignature(false);
+                signedCms.CheckSignature(verifySignatureOnly);
 
                 if (signedCms.SignerInfos.Count == 0)
                 {
@@ -144,13 +184,13 @@ namespace SMimeSigner.Actions
 
                 foreach (var signedInfo in signedCms.SignerInfos)
                 {
-                    if (CheckSignerInfo(signedInfo, issuedCertificate.NotBefore, issuedCertificate.NotAfter) == false)
+                    if (TimeStamper.CheckRFC3161Timestamp(signedInfo, issuedCertificate.NotBefore, issuedCertificate.NotAfter) == false)
                     {
-                        throw new CryptographicException("There is not a valid signing timestamp authority stamp.");
+                        throw new CryptographicException("The RFC3161 timestamp is invalid.");
                     }
                 }
 
-                WriteGpgCertificateData(GoodSignature, signedCms.Certificates);
+                WriteGpgCertificateData(true, signedCms.Certificates);
                 WriteSigningInformation(issuedCertificate, true, signedCms);
 
                 GpgOutputHelper.WriteLine($"{FullyTrusted} 0 shell"); // This indicates we fully trust using the x509 model.
@@ -164,7 +204,7 @@ namespace SMimeSigner.Actions
                 else
                 {
                     var issuedCertificate = signedCms.SignerInfos[0].Certificate;
-                    WriteGpgCertificateData(BadSignature, signedCms.Certificates);
+                    WriteGpgCertificateData(false, signedCms.Certificates);
                     WriteSigningInformation(issuedCertificate, false, signedCms);
                 }
 
@@ -175,10 +215,11 @@ namespace SMimeSigner.Actions
         /// <summary>
         /// Write out the format in the GPG format.
         /// </summary>
-        /// <param name="type">The GPG type, if it's good or bad usually.</param>
+        /// <param name="goodSignature">If this is a good signature or not.</param>
         /// <param name="certificates">The certificates to write.</param>
-        private static void WriteGpgCertificateData(string type, X509Certificate2Collection certificates)
+        private static void WriteGpgCertificateData(bool goodSignature, X509Certificate2Collection certificates)
         {
+            var type = goodSignature ? GoodSignature : BadSignature;
             foreach (var certificate in certificates)
             {
                 GpgOutputHelper.WriteLine($"{type} {certificate.Thumbprint} {certificate.Subject}");
@@ -216,75 +257,6 @@ namespace SMimeSigner.Actions
             {
                 InfoOutputHelper.WriteLine($"Bad signature from '{issuedCertificate.Subject}'");
             }
-        }
-
-        private static bool? CheckSignerInfo(SignerInfo signerInfo, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
-        {
-            const string TimeStampTokenOid = "1.2.840.113549.1.9.16.2.14";
-            bool found = false;
-            byte[] signatureBytes = null;
-
-            foreach (CryptographicAttributeObject attr in signerInfo.UnsignedAttributes)
-            {
-                if (attr.Oid.Value == TimeStampTokenOid)
-                {
-                    foreach (AsnEncodedData attrInst in attr.Values)
-                    {
-                        byte[] attrData = attrInst.RawData;
-
-                        // New API starts here:
-                        if (!Rfc3161TimestampToken.TryDecode(attrData, out var token, out var bytesRead))
-                        {
-                            return false;
-                        }
-
-                        if (bytesRead != attrData.Length)
-                        {
-                            return false;
-                        }
-
-                        signatureBytes = signatureBytes ?? signerInfo.GetSignature();
-
-                        // Check that the token was issued based on the SignerInfo's signature value
-                        if (!token.VerifySignatureForSignerInfo(signerInfo, out var _))
-                        {
-                            return false;
-                        }
-
-                        var timestamp = token.TokenInfo.Timestamp;
-
-                        // Check that the signed timestamp is within the provided policy range
-                        // (which may be (signerInfo.Certificate.NotBefore, signerInfo.Certificate.NotAfter);
-                        // or some other policy decision)
-                        if (timestamp < notBefore.GetValueOrDefault(timestamp) ||
-                            timestamp > notAfter.GetValueOrDefault(timestamp))
-                        {
-                            return false;
-                        }
-
-                        var tokenSignerCert = token.AsSignedCms().SignerInfos[0].Certificate;
-
-                        // Implicit policy decision: Tokens required embedded certificates (since this method has
-                        // no resolver)
-                        if (tokenSignerCert == null)
-                        {
-                            return false;
-                        }
-
-                        found = true;
-                    }
-                }
-            }
-
-            // If we found any attributes and none of them returned an early false, then the SignerInfo is
-            // conformant to policy.
-            if (found)
-            {
-                return true;
-            }
-
-            // Inconclusive, as no signed timestamps were found
-            return null;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SMimeSigner.Helpers
     {
         /// <summary>
         /// Reads all the contents from the specified file name stream.
-        /// It can be a file name, unix file indicator for stdin/out/err, or can be null just to read from stdin.
+        /// It can be a file name or can be null just to read from stdin.
         /// </summary>
         /// <param name="fileName">The file name or descriptor id.</param>
         /// <returns>The bytes contents from the specified handle.</returns>

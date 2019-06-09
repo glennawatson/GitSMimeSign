@@ -20,6 +20,11 @@ namespace SMimeSigner.Helpers
         /// </summary>
         public static Oid SignatureTimeStampOin { get; } = new Oid("1.2.840.113549.1.9.16.2.14");
 
+        /// <summary>
+        /// Find a user certificate based on either email or certificate ID.
+        /// </summary>
+        /// <param name="localUser">The user to find the data for.</param>
+        /// <returns>The certificate if found, null otherwise.</returns>
         public static X509Certificate2 FindUserCertificate(string localUser)
         {
             bool isIdToken = !localUser.Contains("@", StringComparison.InvariantCulture);
@@ -36,21 +41,14 @@ namespace SMimeSigner.Helpers
 
             using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
             {
-                try
-                {
-                    store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
+                store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
 
-                    foreach (var certificate in store.Certificates)
-                    {
-                        if (isMatchFunc(certificate))
-                        {
-                            return certificate;
-                        }
-                    }
-                }
-                catch (CryptographicException ex)
+                foreach (var certificate in store.Certificates)
                 {
-                    Console.WriteLine("Could not open key store: " + ex);
+                    if (isMatchFunc(certificate))
+                    {
+                        return certificate;
+                    }
                 }
             }
 
@@ -59,7 +57,7 @@ namespace SMimeSigner.Helpers
 
         /// <summary>
         /// Based on http://www.iana.org/assignments/pgp-parameters/pgp-parameters.xhtml#pgp-parameters-12
-        /// it will retrieve the appropriate code.
+        /// it will retrieve the appropriate code for the certificate type in GPG format.
         /// </summary>
         /// <param name="certificate">The certificate to get the code for.</param>
         /// <returns>The PGP code.</returns>

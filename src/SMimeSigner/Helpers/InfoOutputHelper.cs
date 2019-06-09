@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace SMimeSigner.Helpers
 {
+    /// <summary>
+    /// This will output more informational pieces which typically get shown to the end user.
+    /// </summary>
     internal static class InfoOutputHelper
     {
         /// <summary>
@@ -16,17 +17,28 @@ namespace SMimeSigner.Helpers
         /// </summary>
         private const string Prefix = "[smimesigner:] ";
 
-        private static readonly TextWriter _textWriter = Console.Error;
+        /// <summary>
+        /// Gets or sets the text writer where to send the output.
+        /// </summary>
+        internal static TextWriter TextWriter { get; set; } = Console.Error;
 
+        /// <summary>
+        /// Writes the line to the users output. Adding the prefix.
+        /// </summary>
+        /// <param name="output">The string to format.</param>
+        /// <param name="args">The arguments if any for the formatting.</param>
         public static void WriteLine(string output, params object[] args)
         {
             // Use unix style output since this seems to be what GIT likes.
-            _textWriter?.Write(Prefix + output + '\n', args);
+            TextWriter?.Write(Prefix + output + '\n', args);
         }
 
+        /// <summary>
+        /// Outputs a line to the output buffer.
+        /// </summary>
         internal static void WriteLine()
         {
-            _textWriter?.Write('\n');
+            TextWriter?.Write('\n');
         }
     }
 }
