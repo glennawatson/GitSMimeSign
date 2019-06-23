@@ -30,7 +30,7 @@ git config --local gpg.x509.program smimesigner
 git config --local gpg.format x509
 ```
 
-### Configure globally
+#### Configure globally
 
 ```Batchfile
 git config --global gpg.x509.program smimesigner
