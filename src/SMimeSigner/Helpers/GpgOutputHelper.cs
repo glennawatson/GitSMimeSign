@@ -83,5 +83,13 @@ namespace SMimeSigner.Helpers
         {
             TextWriter?.WriteLine(output, args);
         }
+
+        /// <summary>
+        /// Flushes the output.
+        /// </summary>
+        public static void Flush()
+        {
+            TextWriter?.Flush();
+        }
     }
 }

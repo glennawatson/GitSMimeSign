@@ -40,5 +40,13 @@ namespace SMimeSigner.Helpers
         {
             TextWriter?.Write('\n');
         }
+
+        /// <summary>
+        /// Flushes the output.
+        /// </summary>
+        internal static void Flush()
+        {
+            TextWriter?.Flush();
+        }
     }
 }

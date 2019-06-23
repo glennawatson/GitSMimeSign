@@ -47,17 +47,29 @@ namespace SMimeSigner.Config
                 return null;
             }
 
-            var iniFileParser = new ConfigParser(configFilePath);
-
-            var timeAuthorityUriString = iniFileParser.GetValue("Certificate", "TimeAuthorityUrl");
-
-            Uri authorityUri = null;
-            if (!string.IsNullOrWhiteSpace(timeAuthorityUriString) && !Uri.TryCreate(timeAuthorityUriString, UriKind.Absolute, out authorityUri))
+            try
             {
-                throw new Exception("The timestamp authority is not a valid URL inside configuration file: " + configFilePath);
-            }
+                var iniFileParser = new ConfigParser(configFilePath);
 
-            return new SMimeSignerConfig(authorityUri);
+                var timeAuthorityUriString = iniFileParser.GetValue("Certificate", "TimeAuthorityUrl");
+
+                if (string.IsNullOrWhiteSpace(timeAuthorityUriString))
+                {
+                    return null;
+                }
+
+                Uri authorityUri = null;
+                if (!string.IsNullOrWhiteSpace(timeAuthorityUriString) && !Uri.TryCreate(timeAuthorityUriString, UriKind.Absolute, out authorityUri))
+                {
+                    throw new Exception("The timestamp authority is not a valid URL inside configuration file: " + configFilePath);
+                }
+
+                return new SMimeSignerConfig(authorityUri);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

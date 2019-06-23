@@ -43,7 +43,7 @@ namespace SMimeSigner.Timestamper
             }
 
             // This example figures out which signer is new by it being "the only signer"
-            if (signedData.SignerInfos.Count > 0)
+            if (signedData.SignerInfos.Count > 1)
             {
                 throw new ArgumentException("We must have only one signer", nameof(signedData));
             }
@@ -82,7 +82,7 @@ namespace SMimeSigner.Timestamper
 
             var timestampToken = request.ProcessResponse(data, out _);
 
-            signedData.SignerInfos[0].UnsignedAttributes.Add(new AsnEncodedData(CertificateHelper.SignatureTimeStampOin, timestampToken.AsSignedCms().Encode()));
+            newSignerInfo.UnsignedAttributes.Add(new AsnEncodedData(CertificateHelper.SignatureTimeStampOin, timestampToken.AsSignedCms().Encode()));
 
             return timestampToken;
         }

@@ -48,7 +48,7 @@ namespace SMimeSigner
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.ToString());
                 Console.WriteLine();
                 Console.WriteLine(HelpText.AutoBuild(parserResult, null, null));
                 return 1;
@@ -83,7 +83,7 @@ namespace SMimeSigner
             }
             catch (Exception ex)
             {
-                InfoOutputHelper.WriteLine(ex.Message);
+                InfoOutputHelper.WriteLine(ex.ToString());
             }
 
             return 1;

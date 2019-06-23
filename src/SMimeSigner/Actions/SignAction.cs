@@ -124,17 +124,12 @@ namespace SMimeSigner.Actions
             // Write out the signature in GPG expected format.
             WriteGpgFormatSignature(certificate, isDetached);
 
-            if (useArmor)
-            {
-                GpgOutputHelper.NoPrefixWriteLine(PemHelper.EncodeString("SIGNED MESSAGE", encoding));
-            }
-            else
-            {
-                GpgOutputHelper.OutputStream.Value.Write(encoding, 0, encoding.Length);
-            }
+            KeyOutputHelper.Write(encoding, useArmor);
 
-            await GpgOutputHelper.TextWriter.FlushAsync().ConfigureAwait(false);
-            await InfoOutputHelper.TextWriter.FlushAsync().ConfigureAwait(false);
+            InfoOutputHelper.WriteLine("Finished signing");
+
+            GpgOutputHelper.Flush();
+            InfoOutputHelper.Flush();
 
             return 0;
         }
