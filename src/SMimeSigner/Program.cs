@@ -48,7 +48,7 @@ namespace SMimeSigner
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
                 Console.WriteLine();
                 Console.WriteLine(HelpText.AutoBuild(parserResult, null, null));
                 return 1;
