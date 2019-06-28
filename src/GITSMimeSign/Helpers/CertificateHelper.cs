@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace SMimeSigner.Helpers
+namespace GitSMimeSigner.Helpers
 {
     /// <summary>
     /// Helper class that helps with the computers current registers X509 certificate store.

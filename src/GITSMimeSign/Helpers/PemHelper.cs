@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SMimeSigner.Helpers
+namespace GitSMimeSigner.Helpers
 {
     /// <summary>
     /// Handles dealing with certificates to and from the PEM format.

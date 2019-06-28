@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMimeSigner", "SMimeSigner\SMimeSigner.csproj", "{4D29B301-B3B0-4963-86C9-8AD463883EE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitSMimeSign", "GitSMimeSign\GitSMimeSign.csproj", "{4D29B301-B3B0-4963-86C9-8AD463883EE8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMimeSigner.Tests", "SMimeSigner.Tests\SMimeSigner.Tests.csproj", "{C2B83A80-995F-4B2D-82A0-047E897DA8AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitSMimeSign.Tests", "GitSMimeSign.Tests\GitSMimeSign.Tests.csproj", "{C2B83A80-995F-4B2D-82A0-047E897DA8AE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DBF691BE-CCA4-4C4E-A920-68AE7E22C4ED}"
 	ProjectSection(SolutionItems) = preProject

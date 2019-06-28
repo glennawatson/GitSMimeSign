@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace SMimeSigner.Helpers
+namespace GitSMimeSigner.Helpers
 {
     /// <summary>
     /// Helpers which assist with common file stream operations.

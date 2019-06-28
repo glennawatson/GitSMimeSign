@@ -10,12 +10,12 @@
     <Authors>Glenn Watson</Authors>
     <Copyright>Copyright (c) Glenn Watson</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/glennawatson/SMimeSigner/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/glennawatson/GitSMimeSign/</PackageProjectUrl>
     <PackageDescription>A global tool for performing GIT SMime Sign operations.</PackageDescription>
     <Owners>glennawatson</Owners>
     <PackageTags>git;x509;smime</PackageTags>
-    <PackageReleaseNotes>https://github.com/glennawatson/SMimeSigner/releases</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/glennawatson/SMimeSigner</RepositoryUrl>
+    <PackageReleaseNotes>https://github.com/glennawatson/GitSMimeSign/releases</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/glennawatson/GitSMimeSign</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 
     <!-- disable sourcelink on mono, to workaround https://github.com/dotnet/sourcelink/issues/155 -->
@@ -35,13 +35,12 @@
   </PropertyGroup>
   
   <ItemGroup Condition="$(IsTestProject)">
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.console" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="Xunit.StaFact" Version="0.3.18" />
     <PackageReference Include="Shouldly" Version="4.0.0-beta0002" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.5" />
     <PackageReference Include="PublicApiGenerator" Version="9.0.0" />
   </ItemGroup>
   
@@ -68,7 +67,7 @@
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.3" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="2.1.0-rc" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="2.1.0" PrivateAssets="All" />
     <PackageReference Condition="'$(OS)' == 'Windows_NT'" Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>

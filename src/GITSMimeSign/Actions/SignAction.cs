@@ -12,10 +12,10 @@ using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-using SMimeSigner.Helpers;
-using SMimeSigner.Timestamper;
+using GitSMimeSigner.Helpers;
+using GitSMimeSigner.Timestamper;
 
-namespace SMimeSigner.Actions
+namespace GitSMimeSigner.Actions
 {
     internal static class SignAction
     {

@@ -9,7 +9,7 @@ using System.Text;
 
 using Salaros.Configuration;
 
-namespace SMimeSigner.Config
+namespace GitSMimeSigner.Config
 {
     /// <summary>
     /// Represents a configuration file and it's contents.

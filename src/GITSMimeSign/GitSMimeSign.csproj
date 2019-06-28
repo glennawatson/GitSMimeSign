@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <PackageId>SMimeSigner</PackageId>
+    <PackageId>GitSMimeSign</PackageId>
     <PackAsTool>true</PackAsTool>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="commandlineparser" Version="2.5.0" />
-    <PackageReference Include="Salaros.ConfigParser" Version="0.3.2" />
+    <PackageReference Include="Salaros.ConfigParser" Version="0.3.3" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.5.2" />
   </ItemGroup>
 

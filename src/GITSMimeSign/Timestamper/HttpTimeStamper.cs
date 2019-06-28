@@ -12,9 +12,9 @@ using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading.Tasks;
 
-using SMimeSigner.Helpers;
+using GitSMimeSigner.Helpers;
 
-namespace SMimeSigner.Timestamper
+namespace GitSMimeSigner.Timestamper
 {
     /// <summary>
     /// A time stamper which checks against the HTTP client authority.

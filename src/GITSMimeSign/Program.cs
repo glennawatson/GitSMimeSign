@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 
-using SMimeSigner.Actions;
-using SMimeSigner.Helpers;
+using GitSMimeSigner.Actions;
+using GitSMimeSigner.Helpers;
 
-namespace SMimeSigner
+namespace GitSMimeSigner
 {
     /// <summary>
     /// The main entry class to the application.

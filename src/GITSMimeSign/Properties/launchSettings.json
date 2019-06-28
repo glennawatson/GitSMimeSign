@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SMimeSigner": {
+    "GitSMimeSign": {
       "commandName": "Project",
       "commandLineArgs": "--status-fd=1 --verify 'C:\\Users\\Glenn\\AppData\\Local\\Temp/.git_vtag_tmpRFI3Ca' -"
     }

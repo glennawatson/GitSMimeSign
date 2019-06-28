@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace SMimeSigner.Actions
+namespace GitSMimeSigner.Actions
 {
     internal static class ListKeysAction
     {

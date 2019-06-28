@@ -11,7 +11,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SMimeSigner.Timestamper
+namespace GitSMimeSigner.Timestamper
 {
     /// <summary>
     /// Performs RFC3161 time stamping.

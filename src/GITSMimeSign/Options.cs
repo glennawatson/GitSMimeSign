@@ -11,9 +11,9 @@ using System.Text;
 
 using CommandLine;
 
-using SMimeSigner.Config;
+using GitSMimeSigner.Config;
 
-namespace SMimeSigner
+namespace GitSMimeSigner
 {
     /// <summary>
     /// The command line options available for the application.

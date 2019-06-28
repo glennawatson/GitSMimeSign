@@ -10,10 +10,10 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
-using SMimeSigner.Helpers;
-using SMimeSigner.Timestamper;
+using GitSMimeSigner.Helpers;
+using GitSMimeSigner.Timestamper;
 
-namespace SMimeSigner.Actions
+namespace GitSMimeSigner.Actions
 {
     /// <summary>
     /// Verifies the data.

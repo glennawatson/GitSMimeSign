@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace SMimeSigner.Helpers
+namespace GitSMimeSigner.Helpers
 {
     /// <summary>
     /// This will output more informational pieces which typically get shown to the end user.
@@ -15,7 +15,7 @@ namespace SMimeSigner.Helpers
         /// <summary>
         /// Use the GNUPG prefix since git is expecting this for output.
         /// </summary>
-        private const string Prefix = "[smimesigner:] ";
+        private const string Prefix = "[GitSMimeSign:] ";
 
         /// <summary>
         /// Gets or sets the text writer where to send the output.

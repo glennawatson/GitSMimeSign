@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 using Shouldly;
 
-using SMimeSigner.Actions;
-using SMimeSigner.Helpers;
+using GitSMimeSigner.Actions;
+using GitSMimeSigner.Helpers;
 using Xunit;
 
-namespace SMimeSigner.Tests
+namespace GitSMimeSigner.Tests
 {
     /// <summary>
     /// Tests associated with the Sign procedures.
