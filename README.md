@@ -1,4 +1,4 @@
-# SMimeSigner
+# GitSMimeSign
 
 A dotnet global tool to sign commits from the GIT program. Supports GPGSM style output.
 
@@ -13,7 +13,7 @@ You need a personal SMIME x509 certificate from a authorised provider.
 Install using the dotnet global tool utility
 
 ```Batchfile
-dotnet tool install -g smimesigner
+dotnet tool install -g gitsmimesign
 ```
 
 ### Configure git
@@ -22,18 +22,18 @@ The following is how to install with GIT versions 2.19 or newer.
 
 #### Configure for local repository only
 
-To configure only a local repository to use the `smimesigner`.
+To configure only a local repository to use the `gitsmimesign`.
 
 ```Batchfile
 cd \to\path\of\repository
-git config --local gpg.x509.program smimesigner
+git config --local gpg.x509.program gitsmimesign
 git config --local gpg.format x509
 ```
 
 #### Configure globally
 
 ```Batchfile
-git config --global gpg.x509.program smimesigner
+git config --global gpg.x509.program gitsmimesign
 git config --global gpg.format x509
 ```
 
@@ -47,7 +47,7 @@ git config --global commit.gpgsign true
 
 Because `git` does not pass a RFC3161 time stamp authority URL you can set one in the configuration file
 
-Create a file in your user profile directory called `.smimesignerconfig`, add the contents modified with your timestamp authority url:
+Create a file in your user profile directory called `.gitsmimesignconfig`, add the contents modified with your timestamp authority url:
 
 ```ini
 [Certificate]
