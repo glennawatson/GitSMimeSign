@@ -65,7 +65,7 @@ We track non-personal information to Application Insights, this can be turned of
 In the `.gitsmimesignconfig` file add the following:
 
 ```ini
-[Telemtry]
+[Telemetry]
 Disable=true
 ```
 
