@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace GitSMimeSigner.Helpers
+using GitSMimeSign.Properties;
+
+namespace GitSMimeSign.Helpers
 {
     /// <summary>
     /// Handles dealing with certificates to and from the PEM format.
@@ -72,7 +74,7 @@ namespace GitSMimeSigner.Helpers
 
             if (!headerFormat.Equals(footerFormat, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new Exception($"Signed certificate Header/footer format mismatch: {headerFormat}/{footerFormat}");
+                throw new SignClientException(string.Format(CultureInfo.InvariantCulture, Resources.InvalidPemHeaderFooter, headerFormat, footerFormat));
             }
 
             return body;
@@ -83,7 +85,7 @@ namespace GitSMimeSigner.Helpers
             var match = Regex.Match(pem, @"^(?<header>\-+\s?BEGIN[^-]+\-+)\s*(?<body>[^-]+)\s*(?<footer>\-+\s?END[^-]+\-+)\s*$");
             if (!match.Success)
             {
-                throw new InvalidOperationException("Data on the stream doesn't match the required PEM format");
+                throw new InvalidOperationException(Resources.InvalidPemEncoding);
             }
 
             var header = match.Groups["header"].Value;
@@ -106,7 +108,7 @@ namespace GitSMimeSigner.Helpers
             var match = Regex.Match(headerOrFooter, $@"({beginOrEnd})\s+(?<format>[^-]+)", RegexOptions.IgnoreCase);
             if (!match.Success)
             {
-                throw new InvalidOperationException($"Unrecognized {beginOrEnd}: {headerOrFooter}");
+                throw new SignClientException(Resources.UnknownPemFormat);
             }
 
             return match.Groups["format"].Value.Trim();

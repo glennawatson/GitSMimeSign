@@ -4,18 +4,18 @@
 
 using System;
 using System.Globalization;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-using GitSMimeSigner.Helpers;
-using GitSMimeSigner.Timestamper;
+using GitSMimeSign.Helpers;
+using GitSMimeSign.Properties;
+using GitSMimeSign.Timestamper;
 
-namespace GitSMimeSigner.Actions
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Metrics.Extensibility;
+
+namespace GitSMimeSign.Actions
 {
     internal static class SignAction
     {
@@ -58,7 +58,7 @@ namespace GitSMimeSigner.Actions
         {
             if (localUser == null)
             {
-                throw new ArgumentNullException(nameof(localUser), "You must specify the ID for signing. Either a email address or the certificate ID.");
+                throw new ArgumentNullException(nameof(localUser), Resources.InvalidCertificateId);
             }
 
             var certificate = CertificateHelper.FindUserCertificate(localUser);
@@ -87,7 +87,7 @@ namespace GitSMimeSigner.Actions
         {
             if (certificate == null)
             {
-                throw new ArgumentNullException(nameof(certificate), "Must have a valid certificate");
+                throw new ArgumentNullException(nameof(certificate), Resources.InvalidCertificate);
             }
 
             if (!certificate.HasPrivateKey)
@@ -97,7 +97,7 @@ namespace GitSMimeSigner.Actions
 
             if (bytes == null)
             {
-                throw new ArgumentNullException(nameof(bytes), "Must have valid data to encrypt.");
+                throw new ArgumentNullException(nameof(bytes), Resources.NothingToEncrypt);
             }
 
             // Git is looking for "\n[GNUPG:] SIG_CREATED ", meaning we need to print a

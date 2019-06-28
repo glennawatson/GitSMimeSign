@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+  <data name="ValidCommandAction" xml:space="preserve">
+    <value>Must select a action. Pick from --list--keys, --sign or --verify.</value>
+  </data>
+  <data name="InvalidTimeAuthority" xml:space="preserve">
+    <value>The timestamp authority {0} command line parameter is not a valid URL.</value>
+  </data>
+  <data name="InvalidTimeAuthorityScheme" xml:space="preserve">
+    <value>The timestamp authority must be HTTP or HTTPS: </value>
+  </data>
+  <data name="InvalidTelemtryValue" xml:space="preserve">
+    <value>Invalid boolean parameter passed to the Telemetry.Disable option.</value>
+  </data>
+  <data name="InvalidTimestampUriConfig" xml:space="preserve">
+    <value>The timestamp authority is not a valid URL inside configuration file: </value>
+  </data>
+  <data name="InvalidCertificateAlgorithm" xml:space="preserve">
+    <value>Certificate has unknown signature algorithm: </value>
+  </data>
+  <data name="StdInNotRedirected" xml:space="preserve">
+    <value>StdIn has not been redirected.</value>
+  </data>
+  <data name="InvalidPemHeaderFooter" xml:space="preserve">
+    <value>Signed certificate Header/footer format mismatch: {0}/{1}</value>
+  </data>
+  <data name="InvalidPemEncoding" xml:space="preserve">
+    <value>Data on the stream doesn't match the required PEM format</value>
+  </data>
+  <data name="TooManySignInfos" xml:space="preserve">
+    <value>We must have only one signer</value>
+  </data>
+  <data name="InvalidTimestampReply" xml:space="preserve">
+    <value>The reply from the time stamp server was in a invalid format.</value>
+  </data>
+  <data name="InvalidCertificateMode" xml:space="preserve">
+    <value>Invalid option for --include-certs</value>
+  </data>
+  <data name="KeyStoreUnableToOpen" xml:space="preserve">
+    <value>Could not open key store.</value>
+  </data>
+  <data name="X509StoreIssue" xml:space="preserve">
+    <value>There was an issue getting the X509 store.</value>
+  </data>
+  <data name="InvalidCertificate" xml:space="preserve">
+    <value>Must have a valid certificate</value>
+  </data>
+  <data name="NothingToEncrypt" xml:space="preserve">
+    <value>Must have valid data to encrypt.</value>
+  </data>
+  <data name="UnknownPemFormat" xml:space="preserve">
+    <value>Unknown format contained within the PEM encoded text.</value>
+  </data>
+  <data name="InvalidSigningInfo" xml:space="preserve">
+    <value>Must have valid signing information. There is none in the signature.</value>
+  </data>
+  <data name="InvalidTimestamp" xml:space="preserve">
+    <value>The RFC3161 timestamp is invalid.</value>
+  </data>
+  <data name="InitializingApplication" xml:space="preserve">
+    <value>Initializing GitSMimeClient</value>
+  </data>
+  <data name="EmailHeader" xml:space="preserve">
+    <value>Emails: {0}</value>
+  </data>
+  <data name="SubjectHeader" xml:space="preserve">
+    <value>Subject: {0}</value>
+  </data>
+  <data name="IssuerHeader" xml:space="preserve">
+    <value>Issuer: {0}</value>
+  </data>
+  <data name="ValidityHeader" xml:space="preserve">
+    <value>Validity: {0} - {1}</value>
+  </data>
+  <data name="SignatureAlgorithmHeader" xml:space="preserve">
+    <value>Signature Algorithm: {0}</value>
+  </data>
+  <data name="SerialNumberHeader" xml:space="preserve">
+    <value>S/N: {0}</value>
+  </data>
+  <data name="IdHeader" xml:space="preserve">
+    <value>ID: {0}</value>
+  </data>
+  <data name="InvalidCertificateId" xml:space="preserve">
+    <value>You must specify the ID for signing. Either a email address or the certificate ID.</value>
+  </data>
+</root>

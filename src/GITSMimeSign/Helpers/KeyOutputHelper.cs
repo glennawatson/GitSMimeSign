@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace GitSMimeSigner.Helpers
+namespace GitSMimeSign.Helpers
 {
     /// <summary>
     /// This will output more informational pieces which typically get shown to the end user.

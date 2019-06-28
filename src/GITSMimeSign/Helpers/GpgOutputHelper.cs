@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace GitSMimeSigner.Helpers
+namespace GitSMimeSign.Helpers
 {
     /// <summary>
     /// Handles the output.

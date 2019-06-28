@@ -3,17 +3,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 using CommandLine;
 
-using GitSMimeSigner.Config;
+using GitSMimeSign.Config;
+using GitSMimeSign.Properties;
 
-namespace GitSMimeSigner
+namespace GitSMimeSign
 {
     /// <summary>
     /// The command line options available for the application.
@@ -73,7 +73,7 @@ namespace GitSMimeSigner
                     case 1:
                         return X509IncludeOption.EndCertOnly;
                     default:
-                        throw new Exception("Invalid option for --include-certs");
+                        throw new Exception(Resources.InvalidCertificateMode);
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace GitSMimeSigner
 
             if (!string.IsNullOrWhiteSpace(TimestampAuthority) && !Uri.TryCreate(TimestampAuthority, UriKind.Absolute, out uri))
             {
-                throw new Exception($"The timestamp authority {uri} command line parameter is not a valid URL.");
+                throw new Exception(string.Format(CultureInfo.InvariantCulture, Resources.InvalidTimeAuthority, uri));
             }
 
             if (string.IsNullOrWhiteSpace(TimestampAuthority))
@@ -126,7 +126,7 @@ namespace GitSMimeSigner
 
             if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
             {
-                throw new Exception("The timestamp authority must be HTTP or HTTPS: " + uri);
+                throw new Exception(Resources.InvalidTimeAuthorityScheme + uri);
             }
 
             return uri;

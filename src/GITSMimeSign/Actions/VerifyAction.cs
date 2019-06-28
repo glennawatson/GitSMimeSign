@@ -10,10 +10,11 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
-using GitSMimeSigner.Helpers;
-using GitSMimeSigner.Timestamper;
+using GitSMimeSign.Helpers;
+using GitSMimeSign.Properties;
+using GitSMimeSign.Timestamper;
 
-namespace GitSMimeSigner.Actions
+namespace GitSMimeSign.Actions
 {
     /// <summary>
     /// Verifies the data.
@@ -177,7 +178,7 @@ namespace GitSMimeSigner.Actions
 
                 if (signedCms.SignerInfos.Count == 0)
                 {
-                    throw new CryptographicException("Must have valid signing information. There is none in the signature.");
+                    throw new SignClientException(Resources.InvalidSigningInfo);
                 }
 
                 var issuedCertificate = signedCms.SignerInfos[0].Certificate;
@@ -186,7 +187,7 @@ namespace GitSMimeSigner.Actions
                 {
                     if (TimeStamper.CheckRFC3161Timestamp(signedInfo, issuedCertificate.NotBefore, issuedCertificate.NotAfter) == false)
                     {
-                        throw new CryptographicException("The RFC3161 timestamp is invalid.");
+                        throw new SignClientException(Resources.InvalidTimestamp);
                     }
                 }
 

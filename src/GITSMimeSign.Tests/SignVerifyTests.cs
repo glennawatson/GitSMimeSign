@@ -10,10 +10,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
+using GitSMimeSign.Actions;
+using GitSMimeSign.Helpers;
+
 using Shouldly;
 
-using GitSMimeSigner.Actions;
-using GitSMimeSigner.Helpers;
 using Xunit;
 
 namespace GitSMimeSigner.Tests

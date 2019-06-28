@@ -3,15 +3,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace GitSMimeSigner.Timestamper
+namespace GitSMimeSign.Timestamper
 {
     /// <summary>
     /// Performs RFC3161 time stamping.

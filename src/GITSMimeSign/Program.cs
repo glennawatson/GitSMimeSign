@@ -3,22 +3,25 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
 using CommandLine;
 using CommandLine.Text;
 
-using GitSMimeSigner.Actions;
-using GitSMimeSigner.Helpers;
+using GitSMimeSign.Actions;
+using GitSMimeSign.Helpers;
+using GitSMimeSign.Properties;
 
-namespace GitSMimeSigner
+using Microsoft.ApplicationInsights.DataContracts;
+
+namespace GitSMimeSign
 {
     /// <summary>
     /// The main entry class to the application.
     /// </summary>
+    [SuppressMessage("Design", "CA1031: Do not catch generic exceptions", Justification = "Catch all deliberate.")]
     internal static class Program
     {
         /// <summary>
@@ -27,10 +30,6 @@ namespace GitSMimeSigner
         /// <param name="args">Command line arguments that have been passed in.</param>
         public static async Task<int> Main(string[] args)
         {
-            #if DEBUG
-            // Debugger.Launch();
-            #endif
-
             // Command Line Parser doesn't handle loner '-' well, so convert to empty brackets.
             for (int i = 0; i < args.Length; ++i)
             {
@@ -41,17 +40,34 @@ namespace GitSMimeSigner
                 }
             }
 
+            TelemetryHelper.Client?.TrackTrace(Resources.InitializingApplication);
+
             var parserResult = Parser.Default.ParseArguments<Options>(args);
             try
             {
                 return await parserResult.MapResult(OnExecuteAsync, _ => Task.FromResult(1)).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (SignClientException ex)
             {
+                // Only send through SignClientException since these contain no personal information.
+                TelemetryHelper.Client?.TrackException(ex);
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine();
                 Console.WriteLine(HelpText.AutoBuild(parserResult, null, null));
                 return 1;
+            }
+            catch (Exception ex)
+            {
+                // Due to the fact we want to be careful with personal information just track the fact that an Exception occurred.
+                TelemetryHelper.Client?.TrackTrace(ex.GetType().FullName, SeverityLevel.Critical);
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine();
+                Console.WriteLine(HelpText.AutoBuild(parserResult, null, null));
+                return 1;
+            }
+            finally
+            {
+                TelemetryHelper.DeInit();
             }
         }
 
@@ -59,31 +75,47 @@ namespace GitSMimeSigner
         {
             if (!options.ListKeys && !options.Sign && !options.VerifySignature)
             {
-                throw new Exception("Must select a action. Pick from --list--keys, --sign or --verify.");
+                throw new Exception(Resources.ValidCommandAction);
             }
 
             GpgOutputHelper.FileDescriptor = options.StatusFileDescriptor;
 
             try
             {
+                int result = 1;
                 if (options.ListKeys)
                 {
-                    return await ListKeysAction.Do().ConfigureAwait(false);
+                    result = await ListKeysAction.Do().ConfigureAwait(false);
                 }
 
                 if (options.Sign)
                 {
-                    return await SignAction.Do(options.FileNames.FirstOrDefault(), options.LocalUser, options.GetTimestampAuthorityUri(), options.DetachedSign, options.Armor, options.IncludeOption).ConfigureAwait(false);
+                    result = await SignAction.Do(options.FileNames.FirstOrDefault(), options.LocalUser, options.GetTimestampAuthorityUri(), options.DetachedSign, options.Armor, options.IncludeOption).ConfigureAwait(false);
                 }
 
                 if (options.VerifySignature)
                 {
-                    return VerifyAction.Do(options.FileNames.ToArray());
+                    result = VerifyAction.Do(options.FileNames.ToArray());
                 }
+
+                if (result == 1)
+                {
+                    throw new Exception(Resources.ValidCommandAction);
+                }
+
+                return result;
+            }
+            catch (SignClientException ex)
+            {
+                InfoOutputHelper.WriteLine(ex.ToString());
+                TelemetryHelper.Client?.TrackException(ex);
             }
             catch (Exception ex)
             {
                 InfoOutputHelper.WriteLine(ex.ToString());
+
+                // Don't pass the exception in the generic case, due to it might contain personal information.
+                TelemetryHelper.Client?.TrackTrace(ex.GetType().FullName, SeverityLevel.Critical);
             }
 
             return 1;

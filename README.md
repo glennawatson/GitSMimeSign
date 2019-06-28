@@ -58,6 +58,17 @@ TimeAuthorityUrl=http://url.to/timestamp/authority
 
 Export out a PFX file from the X509 certificate. Make a backup in a safe location of this file, if someone gets it they can pretend to be you.
 
+### Optional: Disable telemetry
+
+We track non-personal information to Application Insights, this can be turned off in the case for example your employer disallows telemetry.
+
+In the `.gitsmimesignconfig` file add the following:
+
+```ini
+[Telemtry]
+Disable=true
+```
+
 #### Windows
 
 On windows you can use a [Yubikey Mini Smart Driver](https://support.yubico.com/support/solutions/articles/15000006456-yubikey-smart-card-deployment-guide#YubiKey_Minidriver_Installationies8o) but I found the YubiKey manager approach detailed below easier.

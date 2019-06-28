@@ -5,7 +5,9 @@
 using System;
 using System.IO;
 
-namespace GitSMimeSigner.Helpers
+using GitSMimeSign.Properties;
+
+namespace GitSMimeSign.Helpers
 {
     /// <summary>
     /// Helpers which assist with common file stream operations.
@@ -41,7 +43,7 @@ namespace GitSMimeSigner.Helpers
             {
                 if (!Console.IsInputRedirected)
                 {
-                    throw new Exception("StdIn has not been redirected.");
+                    throw new Exception(Resources.StdInNotRedirected);
                 }
 
                 stream = Console.OpenStandardInput();
@@ -52,9 +54,11 @@ namespace GitSMimeSigner.Helpers
 
         private static byte[] ReadFully(Stream stream)
         {
-            var ms = new MemoryStream();
-            stream.CopyTo(ms);
-            return ms.ToArray();
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                return ms.ToArray();
+            }
         }
     }
 }

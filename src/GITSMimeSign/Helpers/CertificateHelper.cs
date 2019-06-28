@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
-namespace GitSMimeSigner.Helpers
+using GitSMimeSign.Properties;
+
+namespace GitSMimeSign.Helpers
 {
     /// <summary>
     /// Helper class that helps with the computers current registers X509 certificate store.
@@ -88,7 +88,7 @@ namespace GitSMimeSigner.Helpers
                     return (rsaAlgorithm, sha512);
 
                 default:
-                    throw new Exception("Certificate has unknown signature algorithm: " + certificate.SignatureAlgorithm.FriendlyName);
+                    throw new Exception(Resources.InvalidCertificateAlgorithm + certificate.SignatureAlgorithm.FriendlyName);
             }
         }
     }

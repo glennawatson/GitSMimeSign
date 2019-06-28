@@ -3,13 +3,15 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text;
+using System.Threading;
+
+using GitSMimeSign.Properties;
 
 using Salaros.Configuration;
 
-namespace GitSMimeSigner.Config
+namespace GitSMimeSign.Config
 {
     /// <summary>
     /// Represents a configuration file and it's contents.
@@ -19,13 +21,17 @@ namespace GitSMimeSigner.Config
     {
         private const string FileName = ".gitsmimesignconfig";
 
+        private static readonly Lazy<SignConfig> SignConfigDefault = new Lazy<SignConfig>(LoadUserProfileConfigInternal, LazyThreadSafetyMode.None);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SignConfig"/> class.
         /// </summary>
         /// <param name="timeAuthorityUri">The URI to the RFC3161 time stamping authority URI.</param>
-        public SignConfig(Uri timeAuthorityUri)
+        /// <param name="disableTelemetry">A value indicating if we should disable telemetry.</param>
+        public SignConfig(Uri timeAuthorityUri, bool disableTelemetry)
         {
             TimeAuthorityUrl = timeAuthorityUri;
+            DisableTelemetry = disableTelemetry;
         }
 
         /// <summary>
@@ -34,10 +40,21 @@ namespace GitSMimeSigner.Config
         public Uri TimeAuthorityUrl { get; }
 
         /// <summary>
+        /// Gets a value indicating whether we should disable telemetry.
+        /// </summary>
+        public bool DisableTelemetry { get; }
+
+        /// <summary>
         /// Loads the configuration from the configuration file in the user profile, if it exists.
         /// </summary>
         /// <returns>The configuration.</returns>
         public static SignConfig LoadUserProfileConfig()
+        {
+            return SignConfigDefault.Value;
+        }
+
+        [SuppressMessage("Design", "CA1031: Do not catch generic exceptions", Justification = "Catch all deliberate.")]
+        private static SignConfig LoadUserProfileConfigInternal()
         {
             var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var configFilePath = Path.Combine(userProfilePath, FileName);
@@ -53,18 +70,22 @@ namespace GitSMimeSigner.Config
 
                 var timeAuthorityUriString = iniFileParser.GetValue("Certificate", "TimeAuthorityUrl");
 
-                if (string.IsNullOrWhiteSpace(timeAuthorityUriString))
-                {
-                    return null;
-                }
-
                 Uri authorityUri = null;
+
                 if (!string.IsNullOrWhiteSpace(timeAuthorityUriString) && !Uri.TryCreate(timeAuthorityUriString, UriKind.Absolute, out authorityUri))
                 {
-                    throw new Exception("The timestamp authority is not a valid URL inside configuration file: " + configFilePath);
+                    throw new SignClientException(Resources.InvalidTimestampUriConfig + configFilePath);
                 }
 
-                return new SignConfig(authorityUri);
+                var disableTelemetryString = iniFileParser.GetValue("Telemetry", "Disable");
+
+                bool disableTelemetry = false;
+                if (!string.IsNullOrWhiteSpace(disableTelemetryString) && !bool.TryParse(disableTelemetryString, out disableTelemetry))
+                {
+                    throw new SignClientException(Resources.InvalidTelemtryValue);
+                }
+
+                return new SignConfig(authorityUri, disableTelemetry);
             }
             catch (Exception)
             {

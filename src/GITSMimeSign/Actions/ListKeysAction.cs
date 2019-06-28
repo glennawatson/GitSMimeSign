@@ -8,7 +8,9 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace GitSMimeSigner.Actions
+using GitSMimeSign.Properties;
+
+namespace GitSMimeSign.Actions
 {
     internal static class ListKeysAction
     {
@@ -29,21 +31,20 @@ namespace GitSMimeSigner.Actions
                             Console.WriteLine();
                         }
 
-                        Console.WriteLine("ID: {0}", certificate.Thumbprint);
-                        Console.WriteLine("S/N: {0}", certificate.SerialNumber);
-                        Console.WriteLine("Signature Algorithm: {0}", certificate.SignatureAlgorithm.FriendlyName);
-                        Console.WriteLine($"Validity: {certificate.NotBefore.ToString("o", CultureInfo.InvariantCulture)} - {certificate.NotAfter.ToString("o", CultureInfo.InvariantCulture)}");
-                        Console.WriteLine("Issuer: {0}", certificate.Issuer);
-                        Console.WriteLine("Subject: {0}", certificate.Subject);
-                        Console.WriteLine("Emails: {0}", certificate.GetNameInfo(X509NameType.EmailName, false));
+                        Console.WriteLine(Resources.IdHeader, certificate.Thumbprint);
+                        Console.WriteLine(Resources.SerialNumberHeader, certificate.SerialNumber);
+                        Console.WriteLine(Resources.SignatureAlgorithmHeader, certificate.SignatureAlgorithm.FriendlyName);
+                        Console.WriteLine(Resources.ValidityHeader, certificate.NotBefore.ToString("o", CultureInfo.InvariantCulture), certificate.NotAfter.ToString("o", CultureInfo.InvariantCulture));
+                        Console.WriteLine(Resources.IssuerHeader, certificate.Issuer);
+                        Console.WriteLine(Resources.SubjectHeader, certificate.Subject);
+                        Console.WriteLine(Resources.EmailHeader, certificate.GetNameInfo(X509NameType.EmailName, false));
                     }
 
                     return Task.FromResult(0);
                 }
                 catch (CryptographicException)
                 {
-                    Console.WriteLine("Could not open key store.");
-                    return Task.FromResult(1);
+                    return Task.FromException<int>(new SignClientException(Resources.X509StoreIssue));
                 }
             }
         }

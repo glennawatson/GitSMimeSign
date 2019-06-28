@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 [assembly: InternalsVisibleTo("GitSMimeSign.Tests")]
+[assembly: NeutralResourcesLanguage("en-US")]
