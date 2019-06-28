@@ -116,7 +116,7 @@ namespace GitSMimeSigner
 
             if (string.IsNullOrWhiteSpace(TimestampAuthority))
             {
-                uri = SMimeSignerConfig.LoadUserProfileConfig()?.TimeAuthorityUrl;
+                uri = SignConfig.LoadUserProfileConfig()?.TimeAuthorityUrl;
             }
 
             if (uri == null)

@@ -15,15 +15,15 @@ namespace GitSMimeSigner.Config
     /// Represents a configuration file and it's contents.
     /// It contains common configuration options that aren't passed in by GIT.
     /// </summary>
-    internal class SMimeSignerConfig
+    internal class SignConfig
     {
-        private const string FileName = ".smimesignerconfig";
+        private const string FileName = ".gitsmimesignconfig";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SMimeSignerConfig"/> class.
+        /// Initializes a new instance of the <see cref="SignConfig"/> class.
         /// </summary>
         /// <param name="timeAuthorityUri">The URI to the RFC3161 time stamping authority URI.</param>
-        public SMimeSignerConfig(Uri timeAuthorityUri)
+        public SignConfig(Uri timeAuthorityUri)
         {
             TimeAuthorityUrl = timeAuthorityUri;
         }
@@ -37,7 +37,7 @@ namespace GitSMimeSigner.Config
         /// Loads the configuration from the configuration file in the user profile, if it exists.
         /// </summary>
         /// <returns>The configuration.</returns>
-        public static SMimeSignerConfig LoadUserProfileConfig()
+        public static SignConfig LoadUserProfileConfig()
         {
             var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var configFilePath = Path.Combine(userProfilePath, FileName);
@@ -64,7 +64,7 @@ namespace GitSMimeSigner.Config
                     throw new Exception("The timestamp authority is not a valid URL inside configuration file: " + configFilePath);
                 }
 
-                return new SMimeSignerConfig(authorityUri);
+                return new SignConfig(authorityUri);
             }
             catch (Exception)
             {
