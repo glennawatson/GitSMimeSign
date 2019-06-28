@@ -5,6 +5,7 @@
     <PackageId>GitSMimeSign</PackageId>
     <PackAsTool>true</PackAsTool>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <ToolCommandName>gitsmimesign</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
