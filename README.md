@@ -6,7 +6,7 @@ It is based off [SMimeSign](https://github.com/github/smimesign) but wrote this 
 
 ## How to use
 
-You need a personal SMIME x509 certificate from a authorised provider.
+You need a personal SMIME X.509 certificate from a authorised provider.
 
 ### Install the global tool
 
@@ -19,16 +19,6 @@ dotnet tool install -g gitsmimesign
 ### Configure git
 
 The following is how to install with GIT versions 2.19 or newer.
-
-#### Configure for local repository only
-
-To configure only a local repository to use the `gitsmimesign`.
-
-```Batchfile
-cd \to\path\of\repository
-git config --local gpg.x509.program gitsmimesign
-git config --local gpg.format x509
-```
 
 #### Configure globally
 
@@ -43,7 +33,42 @@ If you want to always use sign commits by default set:
 git config --global commit.gpgsign true
 ```
 
-### Optional: Set Time Authority URL
+#### Configure for local repository only
+
+To configure only a local repository to use the `gitsmimesign`.
+
+```Batchfile
+cd \to\path\of\repository
+git config --local gpg.x509.program gitsmimesign
+git config --local gpg.format x509
+```
+
+### Optional: Explictly specify X.509 certificate
+
+If you have multiple X.509 certificates that match your identiy, or would otherwise like to use an alternate X.509 certificate, git can be configured to be aware of this.
+
+Start by listing the available keys:
+
+```batchfile
+gitsmimesign --list-keys
+```
+
+Identify the desired X.509 certificate from the list, and note the Certificate ID.
+
+#### Configure globally
+
+```batchfile
+git config --global user.signingkey CERTIFICATE-ID-HERE
+```
+
+#### Configure for local repository only
+
+```batchfile
+cd \to\path\of\repository
+git config --local user.signingkey CERTIFICATE-ID-HERE
+```
+
+### Optional: Set time authority URL
 
 Because `git` does not pass a RFC3161 time stamp authority URL you can set one in the configuration file
 
@@ -56,7 +81,7 @@ TimeAuthorityUrl=http://url.to/timestamp/authority
 
 ### Optional: Configure Yubikey
 
-Export out a PFX file from the X509 certificate. Make a backup in a safe location of this file, if someone gets it they can pretend to be you.
+Export out a PFX file from the X.509 certificate. Make a backup in a safe location of this file, if someone gets it they can pretend to be you.
 
 ### Optional: Disable telemetry
 
