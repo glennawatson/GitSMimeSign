@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
@@ -32,7 +33,8 @@ namespace GitSMimeSign.Helpers
             Func<X509Certificate2, bool> isMatchFunc;
             if (!isIdToken)
             {
-                isMatchFunc = cert => cert.GetNameInfo(X509NameType.EmailName, false)?.Equals(localUser, StringComparison.InvariantCultureIgnoreCase) ?? false;
+                var emailAddress = GetEmailAddress(localUser);
+                isMatchFunc = cert => cert.GetNameInfo(X509NameType.EmailName, false)?.Equals(emailAddress, StringComparison.InvariantCultureIgnoreCase) ?? false;
             }
             else
             {
@@ -90,6 +92,13 @@ namespace GitSMimeSign.Helpers
                 default:
                     throw new Exception(Resources.InvalidCertificateAlgorithm + certificate.SignatureAlgorithm.FriendlyName);
             }
+        }
+
+        private static string GetEmailAddress(string stringInput)
+        {
+            var mailAddress = new MailAddress(stringInput);
+
+            return mailAddress.Address;
         }
     }
 }
