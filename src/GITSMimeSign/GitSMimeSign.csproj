@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="commandlineparser" Version="2.5.0" />
+    <PackageReference Include="commandlineparser" Version="2.6.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.10.0" />
     <PackageReference Include="Salaros.ConfigParser" Version="0.3.3" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.5.2" />
