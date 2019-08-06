@@ -79,10 +79,6 @@ Create a file in your user profile directory called `.gitsmimesignconfig`, add t
 TimeAuthorityUrl=http://url.to/timestamp/authority
 ```
 
-### Optional: Configure Yubikey
-
-Export out a PFX file from the X.509 certificate. Make a backup in a safe location of this file, if someone gets it they can pretend to be you.
-
 ### Optional: Disable telemetry
 
 We track non-personal information to Application Insights, this can be turned off in the case for example your employer disallows telemetry.
@@ -94,6 +90,10 @@ In the `.gitsmimesignconfig` file add the following:
 Disable=true
 ```
 
+### Optional: Configure Yubikey
+
+Export out a PFX file from the X.509 certificate. Make a backup in a safe location of this file, if someone gets it they can pretend to be you.
+
 #### Windows
 
 On windows you can use a [Yubikey Mini Smart Driver](https://support.yubico.com/support/solutions/articles/15000006456-yubikey-smart-card-deployment-guide#YubiKey_Minidriver_Installationies8o) but I found the YubiKey manager approach detailed below easier.
@@ -104,9 +104,9 @@ I am assuming a pin policy of "once" per session, and no "touch" policy, there a
 1. Open a command line.
 1. Run `cd "%PROGRAMFILES%\Yubico\YubiKey Manager"`
 1. Change your pin from the default (if you haven't already) and change from the default pin 123456. Run `.\ykman piv change-pin -P 123456 -n <new pin>`
-1. Run: `.\ykman piv import-key --pin-policy=default 9d C:\path\to\your.pfx`
+1. Run: `.\ykman piv import-key --pin-policy=default 9c C:\path\to\your.pfx`
 1. When prompted, enter the PIN, management key, and password for the PFX.
-1. Run: `.\ykman piv import-certificate 9d C:\path\to\your.pfx`
+1. Run: `.\ykman piv import-certificate 9c C:\path\to\your.pfx`
 1. When prompted, enter the PIN, management key, and password for the PFX.
 1. You may need to logout of your profile if the keys don't show up in SMIMESign below.
 
@@ -117,9 +117,9 @@ I am assuming a pin policy of "once" per session, and no "touch" policy, there a
    brew install ykman
    ```
 1. Change your pin from the default (if you haven't already) and change from the default pin 123456. Run `ykman piv change-pin -P 123456 -n <new pin>`
-1. Run: `ykman piv import-key --pin-policy=default 9d /path/to/your.pfx`
+1. Run: `ykman piv import-key --pin-policy=default 9c /path/to/your.pfx`
 1. When prompted, enter the PIN, management key, and password for the PFX.
-1. Run: `ykman piv import-certificate 9d /path/to/your.pfx`
+1. Run: `ykman piv import-certificate 9c /path/to/your.pfx`
 1. When prompted, enter the PIN, management key, and password for the PFX.
 1. You may need to logout of your profile if the keys don't show up in SMIMESign below.
 
@@ -132,8 +132,8 @@ I am assuming a pin policy of "once" per session, and no "touch" policy, there a
    sudo apt install yubikey-manager-qt
    ```
 1. Change your pin from the default (if you haven't already) and change from the default pin 123456. Run `ykman piv change-pin -P 123456 -n <new pin>`
-1. Run: `ykman piv import-key --pin-policy=default 9d /path/to/your.pfx`
+1. Run: `ykman piv import-key --pin-policy=default 9c /path/to/your.pfx`
 1. When prompted, enter the PIN, management key, and password for the PFX.
-1. Run: `ykman piv import-certificate 9d /path/to/your.pfx`
+1. Run: `ykman piv import-certificate 9c /path/to/your.pfx`
 1. When prompted, enter the PIN, management key, and password for the PFX.
 1. You may need to logout of your profile if the keys don't show up in SMIMESign below.
