@@ -43,6 +43,12 @@ git config --local gpg.x509.program gitsmimesign
 git config --local gpg.format x509
 ```
 
+If you want to always use sign commits by default set:
+
+```Batchfile
+git config --local commit.gpgsign true
+```
+
 ### Optional: Explictly specify X.509 certificate
 
 If you have multiple X.509 certificates that match your identiy, or would otherwise like to use an alternate X.509 certificate, git can be configured to be aware of this.
