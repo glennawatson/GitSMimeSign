@@ -49,8 +49,8 @@ namespace GitSMimeSign
         /// <summary>
         /// Gets or sets the RFC3161 timestamp authority for signing.
         /// </summary>
-        [Option('t', "timestamp-authority", HelpText = "A URL to the RFC 3161 time stamp authority.")]
-        public string TimestampAuthority { get; set; }
+        [Option('t', "timestamp-authority", Default = "http://timestamp.digicert.com", HelpText = "A URL to the RFC 3161 time stamp authority.")]
+        public string TimestampAuthority { get; set; } = "http://timestamp.digicert.com";
 
         /// <summary>
         /// Gets or sets if we should include certificates.

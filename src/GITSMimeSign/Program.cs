@@ -40,8 +40,6 @@ namespace GitSMimeSign
                 }
             }
 
-            TelemetryHelper.Client?.TrackTrace(Resources.InitializingApplication);
-
             var parserResult = Parser.Default.ParseArguments<Options>(args);
             try
             {
@@ -50,7 +48,6 @@ namespace GitSMimeSign
             catch (SignClientException ex)
             {
                 // Only send through SignClientException since these contain no personal information.
-                TelemetryHelper.Client?.TrackException(ex);
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine();
                 Console.WriteLine(HelpText.AutoBuild(parserResult, null, null));
@@ -59,15 +56,10 @@ namespace GitSMimeSign
             catch (Exception ex)
             {
                 // Due to the fact we want to be careful with personal information just track the fact that an Exception occurred.
-                TelemetryHelper.Client?.TrackTrace(ex.GetType().FullName, SeverityLevel.Critical);
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine();
                 Console.WriteLine(HelpText.AutoBuild(parserResult, null, null));
                 return 1;
-            }
-            finally
-            {
-                TelemetryHelper.DeInit();
             }
         }
 
@@ -108,14 +100,10 @@ namespace GitSMimeSign
             catch (SignClientException ex)
             {
                 InfoOutputHelper.WriteLine(ex.ToString());
-                TelemetryHelper.Client?.TrackException(ex);
             }
             catch (Exception ex)
             {
                 InfoOutputHelper.WriteLine(ex.ToString());
-
-                // Don't pass the exception in the generic case, due to it might contain personal information.
-                TelemetryHelper.Client?.TrackTrace(ex.GetType().FullName, SeverityLevel.Critical);
             }
 
             return 1;

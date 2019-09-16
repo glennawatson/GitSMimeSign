@@ -74,7 +74,7 @@ cd \to\path\of\repository
 git config --local user.signingkey CERTIFICATE-ID-HERE
 ```
 
-### Optional: Set time authority URL
+### Recommended: Set time authority URL
 
 Because `git` does not pass a RFC3161 time stamp authority URL you can set one in the configuration file
 
@@ -83,17 +83,6 @@ Create a file in your user profile directory called `.gitsmimesignconfig`, add t
 ```ini
 [Certificate]
 TimeAuthorityUrl=http://url.to/timestamp/authority
-```
-
-### Optional: Disable telemetry
-
-We track non-personal information to Application Insights, this can be turned off in the case for example your employer disallows telemetry.
-
-In the `.gitsmimesignconfig` file add the following:
-
-```ini
-[Telemetry]
-Disable=true
 ```
 
 ### Optional: Configure Yubikey

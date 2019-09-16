@@ -27,22 +27,15 @@ namespace GitSMimeSign.Config
         /// Initializes a new instance of the <see cref="SignConfig"/> class.
         /// </summary>
         /// <param name="timeAuthorityUri">The URI to the RFC3161 time stamping authority URI.</param>
-        /// <param name="disableTelemetry">A value indicating if we should disable telemetry.</param>
-        public SignConfig(Uri timeAuthorityUri, bool disableTelemetry)
+        public SignConfig(Uri timeAuthorityUri)
         {
             TimeAuthorityUrl = timeAuthorityUri;
-            DisableTelemetry = disableTelemetry;
         }
 
         /// <summary>
         /// Gets the RFC3161 time stamping authority URI.
         /// </summary>
         public Uri TimeAuthorityUrl { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether we should disable telemetry.
-        /// </summary>
-        public bool DisableTelemetry { get; }
 
         /// <summary>
         /// Loads the configuration from the configuration file in the user profile, if it exists.
@@ -77,15 +70,7 @@ namespace GitSMimeSign.Config
                     throw new SignClientException(Resources.InvalidTimestampUriConfig + configFilePath);
                 }
 
-                var disableTelemetryString = iniFileParser.GetValue("Telemetry", "Disable");
-
-                bool disableTelemetry = false;
-                if (!string.IsNullOrWhiteSpace(disableTelemetryString) && !bool.TryParse(disableTelemetryString, out disableTelemetry))
-                {
-                    throw new SignClientException(Resources.InvalidTelemtryValue);
-                }
-
-                return new SignConfig(authorityUri, disableTelemetry);
+                return new SignConfig(authorityUri);
             }
             catch (Exception)
             {
