@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>GitSMimeSign</PackageId>
     <PackAsTool>true</PackAsTool>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <ToolCommandName>gitsmimesign</ToolCommandName>
   </PropertyGroup>
 
