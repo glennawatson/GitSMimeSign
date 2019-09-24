@@ -13,7 +13,7 @@ variables:
 
 steps:
 
-- script: '"c:\program files (x86)\microsoft visual studio\installer\vs_installershell.exe" update --wait --quiet --norestart --installPath="c:\program files (x86)\microsoft visual studio\2019\Enterprise"'
+- script: '"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe" update --quiet --norestart --installPath="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"'
   displayName: Update VS 2019 Release
   
 - task: NuGetToolInstaller@0
