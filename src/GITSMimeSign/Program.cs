@@ -14,8 +14,6 @@ using GitSMimeSign.Actions;
 using GitSMimeSign.Helpers;
 using GitSMimeSign.Properties;
 
-using Microsoft.ApplicationInsights.DataContracts;
-
 namespace GitSMimeSign
 {
     /// <summary>
