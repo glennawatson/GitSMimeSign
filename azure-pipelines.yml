@@ -18,7 +18,7 @@ steps:
 
 - script: |
     $(Agent.TempDirectory)\vs_enterprise.exe --update --quiet --wait
-    $(Agent.TempDirectory)\vs_enterprise.exe update --wait --passive --norestart --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
+    $(Agent.TempDirectory)\vs_enterprise.exe update --wait --quiet --norestart --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Current"
   displayName: Update VS 2019 Release
   
 - task: NuGetToolInstaller@0
