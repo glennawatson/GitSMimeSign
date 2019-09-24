@@ -4,13 +4,12 @@
     <OutputType>Exe</OutputType>
     <PackageId>GitSMimeSign</PackageId>
     <PackAsTool>true</PackAsTool>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <ToolCommandName>gitsmimesign</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="commandlineparser" Version="2.6.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.10.0" />
     <PackageReference Include="Salaros.ConfigParser" Version="0.3.3" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.6.0" />
   </ItemGroup>

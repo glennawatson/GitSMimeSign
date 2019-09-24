@@ -14,10 +14,6 @@ using System.Threading.Tasks;
 using GitSMimeSign.Helpers;
 using GitSMimeSign.Properties;
 
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
-
 namespace GitSMimeSign.Timestamper
 {
     /// <summary>

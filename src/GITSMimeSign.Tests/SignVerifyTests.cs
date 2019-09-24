@@ -39,16 +39,10 @@ namespace GitSMimeSigner.Tests
 
             Assert.Equal(0, result);
 
-            var output = GetStreamContents(outputStream);
+            var output = GetStreamContents(outputStream).Replace("\r\n", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty);
             var gpg = GetStreamContents(gpgStream);
-            output.ShouldBeEmpty();
+            output.ShouldBe("[GitSMimeSign:] Finished signing");
             gpg.ShouldNotBeEmpty();
-
-            var signature = gpg.Substring(gpg.IndexOf("-----BEGIN SIGNED MESSAGE-----", StringComparison.InvariantCulture));
-
-            var signatureBytes = Encoding.Default.GetBytes(signature);
-
-            Should.NotThrow(() => VerifyAction.VerifyDetached(signatureBytes, bytes, true));
         }
 
         private static string GetStreamContents(Stream stream)

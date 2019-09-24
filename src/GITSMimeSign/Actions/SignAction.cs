@@ -12,9 +12,6 @@ using GitSMimeSign.Helpers;
 using GitSMimeSign.Properties;
 using GitSMimeSign.Timestamper;
 
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Metrics.Extensibility;
-
 namespace GitSMimeSign.Actions
 {
     internal static class SignAction
