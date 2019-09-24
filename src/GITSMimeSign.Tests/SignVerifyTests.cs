@@ -32,7 +32,6 @@ namespace GitSMimeSigner.Tests
         [Fact]
         public async Task TestSignAndVerifyPemDetached()
         {
-            const string signedMessage = "-----BEGIN SIGNED MESSAGE-----";
             var (outputStream, gpgStream) = GetOutputStreams();
             var certificate = Generate();
             var bytes = Encoding.UTF8.GetBytes("Hello World");
@@ -40,9 +39,9 @@ namespace GitSMimeSigner.Tests
 
             Assert.Equal(0, result);
 
-            var output = GetStreamContents(outputStream);
+            var output = GetStreamContents(outputStream).Replace("\r\n", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty);
             var gpg = GetStreamContents(gpgStream);
-            output.ShouldBe("[GitSMimeSign:] Finished signing" + Environment.NewLine);
+            output.ShouldBe("[GitSMimeSign:] Finished signing");
             gpg.ShouldNotBeEmpty();
         }
 
