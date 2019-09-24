@@ -22,11 +22,6 @@ steps:
   inputs:
     version: $(dotNetVersion)
 
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
-  inputs:
-    restoreSolution: '$(solution)'
-
 - task: DotNetCoreCLI@2  
   inputs:
     command: custom
