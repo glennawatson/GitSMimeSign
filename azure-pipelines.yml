@@ -8,14 +8,14 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  dotNetVersion: '2.2.300'
+  dotNetVersion: '3.x'
 
 steps:
 - task: NuGetToolInstaller@0
   inputs:
-    versionSpec: '5.1.0' 
+    versionSpec: '5.2.0' 
 
-- task: DotNetCoreInstaller@0
+- task: UseDotNet@2
   displayName: Install Dot Net Core v$(dotNetVersion)
   inputs:
     version: $(dotNetVersion)
