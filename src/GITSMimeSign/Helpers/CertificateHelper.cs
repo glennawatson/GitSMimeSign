@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -16,6 +17,8 @@ namespace GitSMimeSign.Helpers
     /// </summary>
     internal static class CertificateHelper
     {
+        private const string SecureEmailExtensionOid = "1.3.6.1.5.5.7.3.4";
+
         /// <summary>
         /// Gets the OIN where to store the signature stamp.
         /// </summary>
@@ -33,8 +36,7 @@ namespace GitSMimeSign.Helpers
             Func<X509Certificate2, bool> isMatchFunc;
             if (!isIdToken)
             {
-                var emailAddress = GetEmailAddress(localUser);
-                isMatchFunc = cert => cert.GetNameInfo(X509NameType.EmailName, false)?.Equals(emailAddress, StringComparison.InvariantCultureIgnoreCase) ?? false;
+                isMatchFunc = cert => IsEmailMatch(cert, localUser);
             }
             else
             {
@@ -92,6 +94,47 @@ namespace GitSMimeSign.Helpers
                 default:
                     throw new Exception(Resources.InvalidCertificateAlgorithm + certificate.SignatureAlgorithm.FriendlyName);
             }
+        }
+
+        /// <summary>
+        /// Checks to make sure that the certificate is valid for signing.
+        /// </summary>
+        /// <param name="certificate">The certificate to check.</param>
+        /// <returns>If the certificate is a valid signing certificate.</returns>
+        public static bool IsValidSigningCertificate(this X509Certificate2 certificate)
+        {
+            foreach (var extension in certificate.Extensions)
+            {
+                if (!(extension is X509EnhancedKeyUsageExtension enhancedKeyUsageExtension))
+                {
+                    continue;
+                }
+
+                foreach (var enhancedKeyUsage in enhancedKeyUsageExtension.EnhancedKeyUsages)
+                {
+                    if (enhancedKeyUsage.Value == SecureEmailExtensionOid)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsEmailMatch(X509Certificate2 certificate, string localUser)
+        {
+            var emailAddress = GetEmailAddress(localUser);
+
+            var isMatch = certificate.GetNameInfo(X509NameType.EmailName, false)
+                ?.Equals(emailAddress, StringComparison.InvariantCultureIgnoreCase) ?? false;
+
+            if (isMatch == false)
+            {
+                return false;
+            }
+
+            return certificate.IsValidSigningCertificate();
         }
 
         private static string GetEmailAddress(string stringInput)

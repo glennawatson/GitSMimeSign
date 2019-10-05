@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-
+using GitSMimeSign.Helpers;
 using GitSMimeSign.Properties;
 
 namespace GitSMimeSign.Actions
@@ -22,13 +22,24 @@ namespace GitSMimeSign.Actions
                 {
                     store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
 
+                    bool firstEntry = true;
+
                     for (int i = 0; i < store.Certificates.Count; ++i)
                     {
                         var certificate = store.Certificates[i];
 
-                        if (i != 0)
+                        if (!certificate.IsValidSigningCertificate())
+                        {
+                            continue;
+                        }
+
+                        if (!firstEntry)
                         {
                             Console.WriteLine();
+                        }
+                        else
+                        {
+                            firstEntry = false;
                         }
 
                         Console.WriteLine(Resources.IdHeader, certificate.Thumbprint);
