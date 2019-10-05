@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "GitSMimeSign": {
-      "commandName": "Project",
-      "commandLineArgs": "-bsau test.txt"
-    }
-  }
-}
