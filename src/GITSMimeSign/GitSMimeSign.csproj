@@ -6,7 +6,15 @@
     <PackAsTool>true</PackAsTool>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ToolCommandName>gitsmimesign</ToolCommandName>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="commandlineparser" Version="2.8.0" />
