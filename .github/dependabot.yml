@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "19:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Nerdbank.GitVersioning
+    versions:
+    - 3.4.190
+  - dependency-name: Salaros.ConfigParser
+    versions:
+    - 0.3.6
+    - 0.3.7
+  - dependency-name: Microsoft.NET.Test.Sdk
+    versions:
+    - 16.8.3
+  - dependency-name: Roslynator.Analyzers
+    versions:
+    - 3.0.0
