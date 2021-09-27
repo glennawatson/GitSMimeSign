@@ -16,15 +16,15 @@ namespace GitSMimeSign.Actions
     {
         public static Task<int> Do()
         {
-            using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
+            using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
             {
                 try
                 {
                     store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
 
-                    bool firstEntry = true;
+                    var firstEntry = true;
 
-                    for (int i = 0; i < store.Certificates.Count; ++i)
+                    for (var i = 0; i < store.Certificates.Count; ++i)
                     {
                         var certificate = store.Certificates[i];
 

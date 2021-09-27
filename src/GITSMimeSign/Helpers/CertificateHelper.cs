@@ -31,7 +31,7 @@ namespace GitSMimeSign.Helpers
         /// <returns>The certificate if found, null otherwise.</returns>
         public static X509Certificate2 FindUserCertificate(string localUser)
         {
-            bool isIdToken = !localUser.Contains("@", StringComparison.InvariantCulture);
+            var isIdToken = !localUser.Contains("@", StringComparison.InvariantCulture);
 
             Func<X509Certificate2, bool> isMatchFunc;
             if (!isIdToken)
@@ -43,7 +43,7 @@ namespace GitSMimeSign.Helpers
                 isMatchFunc = cert => cert.Thumbprint?.Equals(localUser, StringComparison.InvariantCultureIgnoreCase) ?? false;
             }
 
-            using (X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
+            using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
             {
                 store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
 
@@ -129,7 +129,7 @@ namespace GitSMimeSign.Helpers
             var isMatch = certificate.GetNameInfo(X509NameType.EmailName, false)
                 ?.Equals(emailAddress, StringComparison.InvariantCultureIgnoreCase) ?? false;
 
-            if (isMatch == false)
+            if (!isMatch)
             {
                 return false;
             }

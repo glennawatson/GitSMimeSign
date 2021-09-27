@@ -26,21 +26,21 @@ namespace GitSMimeSign.Helpers
         {
             var builder = new StringBuilder();
 
-            builder.AppendLine($"-----BEGIN {elementType}-----");
+            builder.Append("-----BEGIN ").Append(elementType).AppendLine("-----");
 
-            string base64 = Convert.ToBase64String(bytes);
+            var base64 = Convert.ToBase64String(bytes);
 
-            int offset = 0;
+            var offset = 0;
             const int LineLength = 64;
 
             while (offset < base64.Length)
             {
-                int lineEnd = Math.Min(offset + LineLength, base64.Length);
-                builder.AppendLine(base64.Substring(offset, lineEnd - offset));
+                var lineEnd = Math.Min(offset + LineLength, base64.Length);
+                builder.Append(base64, offset, lineEnd - offset).AppendLine();
                 offset = lineEnd;
             }
 
-            builder.AppendLine($"-----END {elementType}-----");
+            builder.Append("-----END ").Append(elementType).AppendLine("-----");
             return builder.ToString();
         }
 

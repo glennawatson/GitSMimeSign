@@ -119,7 +119,7 @@ namespace GitSMimeSign
                 uri = SignConfig.LoadUserProfileConfig()?.TimeAuthorityUrl;
             }
 
-            if (uri == null)
+            if (uri is null)
             {
                 return null;
             }

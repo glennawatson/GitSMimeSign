@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28922.388
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitSMimeSign", "GITSMimeSign\GitSMimeSign.csproj", "{4D29B301-B3B0-4963-86C9-8AD463883EE8}"
 EndProject
@@ -9,11 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitSMimeSign.Tests", "GITSM
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DBF691BE-CCA4-4C4E-A920-68AE7E22C4ED}"
 	ProjectSection(SolutionItems) = preProject
-		analyzers.ruleset = analyzers.ruleset
-		analyzers.tests.ruleset = analyzers.tests.ruleset
+		..\.editorconfig = ..\.editorconfig
 		Directory.Build.props = Directory.Build.props
 		Directory.build.targets = Directory.build.targets
 		global.json = global.json
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
 		..\version.json = ..\version.json
 	EndProjectSection
 EndProject
