@@ -29,7 +29,7 @@ namespace GitSMimeSign
         public static async Task<int> Main(string[] args)
         {
             // Command Line Parser doesn't handle loner '-' well, so convert to empty brackets.
-            for (int i = 0; i < args.Length; ++i)
+            for (var i = 0; i < args.Length; ++i)
             {
                 var arg = args[i];
                 if (arg == "-")
@@ -72,7 +72,7 @@ namespace GitSMimeSign
 
             try
             {
-                int result = 1;
+                var result = 1;
                 if (options.ListKeys)
                 {
                     result = await ListKeysAction.Do().ConfigureAwait(false);

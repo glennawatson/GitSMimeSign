@@ -25,7 +25,7 @@ namespace GitSMimeSign.Helpers
             }
             else
             {
-                using (Stream myOutStream = Console.OpenStandardOutput())
+                using (var myOutStream = Console.OpenStandardOutput())
                 {
                     myOutStream.Write(data, 0, data.Length);
                 }

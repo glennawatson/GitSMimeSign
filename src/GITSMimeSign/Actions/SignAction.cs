@@ -53,14 +53,14 @@ namespace GitSMimeSign.Actions
         /// <returns>0 if the operation was successful, 1 otherwise.</returns>
         public static Task<int> Do(string fileName, string localUser, Uri timeStampAuthority, bool isDetached, bool useArmor, X509IncludeOption includeOption)
         {
-            if (localUser == null)
+            if (localUser is null)
             {
                 throw new ArgumentNullException(nameof(localUser), Resources.InvalidCertificateId);
             }
 
             var certificate = CertificateHelper.FindUserCertificate(localUser);
 
-            if (certificate == null)
+            if (certificate is null)
             {
                 throw new ArgumentException("Failed to get identity certificate with identity: " + localUser, nameof(localUser));
             }
@@ -82,7 +82,7 @@ namespace GitSMimeSign.Actions
         /// <returns>0 if the operation was successful, 1 otherwise.</returns>
         internal static async Task<int> PerformSign(X509Certificate2 certificate, byte[] bytes, Uri timeStampAuthority, bool isDetached, bool useArmor, X509IncludeOption includeOption)
         {
-            if (certificate == null)
+            if (certificate is null)
             {
                 throw new ArgumentNullException(nameof(certificate), Resources.InvalidCertificate);
             }
@@ -92,7 +92,7 @@ namespace GitSMimeSign.Actions
                 throw new ArgumentException($"The certificate {certificate.Thumbprint} has a invalid signing key.", nameof(certificate));
             }
 
-            if (bytes == null)
+            if (bytes is null)
             {
                 throw new ArgumentNullException(nameof(bytes), Resources.NothingToEncrypt);
             }
@@ -136,7 +136,7 @@ namespace GitSMimeSign.Actions
             const int signatureCode = 0; // GPGSM uses 0 as well.
             var signatureType = isDetached ? "D" : "S";
             var (algorithmCode, hashCode) = CertificateHelper.ToPgpPublicKeyAlgorithmCode(certificate);
-            GpgOutputHelper.WriteLine($"{SignatureCreated} {signatureType} {algorithmCode} {hashCode} {signatureCode} {DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)} {certificate.Thumbprint}");
+            GpgOutputHelper.WriteLine($"{SignatureCreated} {signatureType} {algorithmCode.ToString()} {hashCode.ToString()} {signatureCode.ToString()} {DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)} {certificate.Thumbprint}");
         }
     }
 }

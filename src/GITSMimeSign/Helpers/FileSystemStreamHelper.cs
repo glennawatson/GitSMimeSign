@@ -30,14 +30,13 @@ namespace GitSMimeSign.Helpers
 
         private static Stream OpenFileOrDescriptor(string fileName)
         {
-            Stream stream;
             if (!string.IsNullOrWhiteSpace(fileName) && fileName == "-")
             {
-                stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                return new FileStream(fileName, FileMode.Open, FileAccess.Read);
             }
             else if (!string.IsNullOrWhiteSpace(fileName))
             {
-                stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                return new FileStream(fileName, FileMode.Open, FileAccess.Read);
             }
             else
             {
@@ -46,10 +45,8 @@ namespace GitSMimeSign.Helpers
                     throw new Exception(Resources.StdInNotRedirected);
                 }
 
-                stream = Console.OpenStandardInput();
+                return Console.OpenStandardInput();
             }
-
-            return stream;
         }
 
         private static byte[] ReadFully(Stream stream)

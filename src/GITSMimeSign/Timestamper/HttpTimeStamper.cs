@@ -38,7 +38,7 @@ namespace GitSMimeSign.Timestamper
         [SuppressMessage("Design", "CA2000: Dispose a local variable.", Justification = "Unneeded in this case, they will be cleaned up when out of scope.")]
         public async Task<Rfc3161TimestampToken> GetAndSetRfc3161Timestamp(SignedCms signedData, Uri timeStampAuthorityUri)
         {
-                if (timeStampAuthorityUri == null)
+                if (timeStampAuthorityUri is null)
                 {
                     throw new ArgumentNullException(nameof(timeStampAuthorityUri));
                 }
@@ -51,7 +51,7 @@ namespace GitSMimeSign.Timestamper
 
                 var newSignerInfo = signedData.SignerInfos[0];
 
-                byte[] nonce = new byte[8];
+                var nonce = new byte[8];
 
                 using (var rng = RandomNumberGenerator.Create())
                 {
@@ -72,7 +72,7 @@ namespace GitSMimeSign.Timestamper
                 if (!httpResponse.IsSuccessStatusCode)
                 {
                     throw new SignClientException(
-                        $"There was a error from the timestamp authority. It responded with {httpResponse.StatusCode} {(int)httpResponse.StatusCode}");
+                        $"There was a error from the timestamp authority. It responded with {httpResponse.StatusCode.ToString()} {((int)httpResponse.StatusCode).ToString()}");
                 }
 
                 if (httpResponse.Content.Headers.ContentType.MediaType != "application/timestamp-reply")
@@ -84,7 +84,7 @@ namespace GitSMimeSign.Timestamper
 
                 var timestampToken = request.ProcessResponse(data, out _);
 
-                newSignerInfo.UnsignedAttributes.Add(new AsnEncodedData(CertificateHelper.SignatureTimeStampOin, timestampToken.AsSignedCms().Encode()));
+                newSignerInfo.AddUnsignedAttribute(new AsnEncodedData(CertificateHelper.SignatureTimeStampOin, timestampToken.AsSignedCms().Encode()));
 
                 return timestampToken;
         }
@@ -98,16 +98,16 @@ namespace GitSMimeSign.Timestamper
 
         internal static bool? CheckRFC3161TimestampInternal(SignerInfo signerInfo, DateTimeOffset? notBefore, DateTimeOffset? notAfter)
         {
-            bool found = false;
+            var found = false;
             byte[] signatureBytes = null;
 
-            foreach (CryptographicAttributeObject attr in signerInfo.UnsignedAttributes)
+            foreach (var attr in signerInfo.UnsignedAttributes)
             {
                 if (attr.Oid.Value == CertificateHelper.SignatureTimeStampOin.Value)
                 {
-                    foreach (AsnEncodedData attrInst in attr.Values)
+                    foreach (var attrInst in attr.Values)
                     {
-                        byte[] attrData = attrInst.RawData;
+                        var attrData = attrInst.RawData;
 
                         // New API starts here:
                         if (!Rfc3161TimestampToken.TryDecode(attrData, out var token, out var bytesRead))
@@ -120,7 +120,7 @@ namespace GitSMimeSign.Timestamper
                             return false;
                         }
 
-                        signatureBytes = signatureBytes ?? signerInfo.GetSignature();
+                        signatureBytes ??= signerInfo.GetSignature();
 
                         // Check that the token was issued based on the SignerInfo's signature value
                         if (!token.VerifySignatureForSignerInfo(signerInfo, out _))
@@ -133,8 +133,8 @@ namespace GitSMimeSign.Timestamper
                         // Check that the signed timestamp is within the provided policy range
                         // (which may be (signerInfo.Certificate.NotBefore, signerInfo.Certificate.NotAfter);
                         // or some other policy decision)
-                        if (timestamp < notBefore.GetValueOrDefault(timestamp) ||
-                            timestamp > notAfter.GetValueOrDefault(timestamp))
+                        if (timestamp < (notBefore ?? timestamp) ||
+                            timestamp > (notAfter ?? timestamp))
                         {
                             return false;
                         }
@@ -143,7 +143,7 @@ namespace GitSMimeSign.Timestamper
 
                         // Implicit policy decision: Tokens required embedded certificates (since this method has
                         // no resolver)
-                        if (tokenSignerCert == null)
+                        if (tokenSignerCert is null)
                         {
                             return false;
                         }
