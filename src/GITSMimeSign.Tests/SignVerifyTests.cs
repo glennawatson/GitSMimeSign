@@ -101,7 +101,7 @@ namespace GitSMimeSigner.Tests
                 new X509BasicConstraintsExtension(true, false, 0, true));
 
             var now = DateTimeOffset.UtcNow;
-            return request.CreateSelfSigned(now, now.AddDays(90));
+            return request.CreateSelfSigned(now.AddDays(-2), now.AddDays(91));
         }
     }
 }
