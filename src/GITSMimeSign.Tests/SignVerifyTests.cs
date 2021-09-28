@@ -80,7 +80,7 @@ namespace GitSMimeSigner.Tests
             var serialNumber = new byte[8];
             RandomNumberGenerator.Fill(serialNumber);
             var now = DateTimeOffset.UtcNow;
-            var cert = request.Create(caFakeIssuer, now, now.AddDays(90), serialNumber);
+            var cert = request.Create(caFakeIssuer, now.AddDays(-1), now.AddDays(90), serialNumber);
 
             var temp = cert.CopyWithPrivateKey(rsa);
 
@@ -101,7 +101,7 @@ namespace GitSMimeSigner.Tests
                 new X509BasicConstraintsExtension(true, false, 0, true));
 
             var now = DateTimeOffset.UtcNow;
-            return request.CreateSelfSigned(now, now.AddDays(90));
+            return request.CreateSelfSigned(now.AddDays(-2), now.AddDays(91));
         }
     }
 }
