@@ -110,7 +110,7 @@ namespace GitSMimeSign.Actions
             cms.ComputeSignature(signer, false);
 
             // If we are provided with a authority, add the timestamp certificate into our unsigned attributes.
-            if (timeStampAuthority != null)
+            if (timeStampAuthority is not null)
             {
                 InfoOutputHelper.WriteLine("Stamping with RFC 3161 Time Stamp Authority: " + timeStampAuthority);
                 await TimeStamper.GetAndSetRfc3161Timestamp(cms, timeStampAuthority).ConfigureAwait(false);
