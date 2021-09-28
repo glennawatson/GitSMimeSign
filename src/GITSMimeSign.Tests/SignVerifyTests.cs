@@ -80,7 +80,7 @@ namespace GitSMimeSigner.Tests
             var serialNumber = new byte[8];
             RandomNumberGenerator.Fill(serialNumber);
             var now = DateTimeOffset.UtcNow;
-            var cert = request.Create(caFakeIssuer, now, now.AddDays(90), serialNumber);
+            var cert = request.Create(caFakeIssuer, now.AddDays(-1), now.AddDays(90), serialNumber);
 
             var temp = cert.CopyWithPrivateKey(rsa);
 
