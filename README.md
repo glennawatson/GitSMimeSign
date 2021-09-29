@@ -2,6 +2,8 @@
 
 A dotnet global tool to sign commits from the GIT program. Supports GPGSM style output.
 
+It has .net core 3.1, net 5 and net6 output.
+
 It is based off [SMimeSign](https://github.com/github/smimesign) but wrote this program to interop better with the Yubikey.
 
 ## How to use
